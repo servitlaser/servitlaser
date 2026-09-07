@@ -515,11 +515,27 @@
 
 <script>
   let cart = [];
+  let lockedScrollY = 0;
+  function lockScroll(){
+    lockedScrollY = window.scrollY;
+    document.body.style.position = 'fixed';
+    document.body.style.top = '-' + lockedScrollY + 'px';
+    document.body.style.left = '0';
+    document.body.style.right = '0';
+  }
+  function unlockScroll(){
+    document.body.style.position = '';
+    document.body.style.top = '';
+    document.body.style.left = '';
+    document.body.style.right = '';
+    window.scrollTo(0, lockedScrollY);
+  }
 
   function toggleNav(){
     const nav = document.getElementById('mainNav');
+    const willOpen = !nav.classList.contains('open');
     nav.classList.toggle('open');
-    document.body.classList.toggle('no-scroll', nav.classList.contains('open'));
+    if(willOpen){ lockScroll(); } else { unlockScroll(); }
   }
   function toggleSearch(){
     const bar = document.getElementById('searchBar');
@@ -537,12 +553,12 @@
   function openCart(){
     document.getElementById('cartPanel').classList.add('open');
     document.getElementById('cartOverlay').classList.add('open');
-    document.body.classList.add('no-scroll');
+    lockScroll();
   }
   function closeCart(){
     document.getElementById('cartPanel').classList.remove('open');
     document.getElementById('cartOverlay').classList.remove('open');
-    document.body.classList.remove('no-scroll');
+    unlockScroll();
   }
   function addToCart(name, price){
     const existing = cart.find(function(i){ return i.name === name; });
