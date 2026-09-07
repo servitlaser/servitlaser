@@ -21,6 +21,7 @@
   *{box-sizing:border-box; margin:0; padding:0;}
   html{scroll-behavior:smooth;}
   html,body{overflow-x:hidden; max-width:100%;}
+  body.no-scroll{overflow:hidden;}
   body{font-family:'Inter',sans-serif; color:var(--body); background:var(--bg); line-height:1.55; -webkit-font-smoothing:antialiased;}
   h1,h2,h3{font-family:'Fraunces',serif; color:var(--heading); line-height:1.15; font-weight:600;}
   a{color:inherit; text-decoration:none;}
@@ -515,7 +516,11 @@
 <script>
   let cart = [];
 
-  function toggleNav(){ document.getElementById('mainNav').classList.toggle('open'); }
+  function toggleNav(){
+    const nav = document.getElementById('mainNav');
+    nav.classList.toggle('open');
+    document.body.classList.toggle('no-scroll', nav.classList.contains('open'));
+  }
   function toggleSearch(){
     const bar = document.getElementById('searchBar');
     bar.classList.toggle('open');
@@ -532,10 +537,12 @@
   function openCart(){
     document.getElementById('cartPanel').classList.add('open');
     document.getElementById('cartOverlay').classList.add('open');
+    document.body.classList.add('no-scroll');
   }
   function closeCart(){
     document.getElementById('cartPanel').classList.remove('open');
     document.getElementById('cartOverlay').classList.remove('open');
+    document.body.classList.remove('no-scroll');
   }
   function addToCart(name, price){
     const existing = cart.find(function(i){ return i.name === name; });
