@@ -72,29 +72,29 @@
     totalEl.textContent = '€'+total.toFixed(2).replace('.',',');
   }
   function checkout(){
-    if(cart.length === 0){ alert('O carrinho está vazio.'); return; }
+    if(cart.length === 0){ alert('Your cart is empty.'); return; }
     const note = document.getElementById('nota-personalizacao').value.trim();
     const lines = cart.map(function(i){
       const priceStr = i.price > 0 ? ('€'+(i.price*i.qty).toFixed(2).replace('.',',')) : 'a combinar';
       return '- '+i.name+' x'+i.qty+' — '+priceStr;
     });
     const total = cart.reduce(function(s,i){ return s + i.price*i.qty; }, 0);
-    let body = 'Olá! Gostaria de encomendar:\n\n'+lines.join('\n')+'\n\nTotal: €'+total.toFixed(2).replace('.',',');
-    if(note) body += '\n\nPersonalização:\n'+note;
-    const url = 'mailto:info@servitlaser.com?subject='+encodeURIComponent('Nova encomenda - SerVit Laser')+'&body='+encodeURIComponent(body);
+    let body = 'Hello! I would like to order:\n\n'+lines.join('\n')+'\n\nTotal: €'+total.toFixed(2).replace('.',',');
+    if(note) body += '\n\nCustomization:\n'+note;
+    const url = 'mailto:info@servitlaser.com?subject='+encodeURIComponent('New order - SerVit Laser')+'&body='+encodeURIComponent(body);
     window.location.href = url;
   }
   function enviarPersonalizacao(){
     const nome = document.getElementById('p-nome').value.trim();
     const produto = document.getElementById('p-produto').value.trim();
     const detalhe = document.getElementById('p-detalhe').value.trim();
-    const body = 'Nome: '+nome+'\nProduto: '+produto+'\nO que quero gravado:\n'+detalhe;
-    window.location.href = 'mailto:info@servitlaser.com?subject='+encodeURIComponent('Pedido de Personalização')+'&body='+encodeURIComponent(body);
+    const body = 'Name: '+nome+'\nProduct: '+produto+'\nWhat I want engraved:\n'+detalhe;
+    window.location.href = 'mailto:info@servitlaser.com?subject='+encodeURIComponent('Customization Request')+'&body='+encodeURIComponent(body);
   }
   function subscribeNewsletter(e){
     e.preventDefault();
     const email = document.getElementById('newsletterEmail').value;
-    window.location.href = 'mailto:info@servitlaser.com?subject='+encodeURIComponent('Nova subscrição newsletter')+'&body='+encodeURIComponent('Email para subscrever: '+email);
+    window.location.href = 'mailto:info@servitlaser.com?subject='+encodeURIComponent('New newsletter subscription')+'&body='+encodeURIComponent('Email to subscribe: '+email);
     return false;
   }
 
