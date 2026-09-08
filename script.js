@@ -97,3 +97,18 @@
     window.location.href = 'mailto:info@servitlaser.com?subject='+encodeURIComponent('Nova subscrição newsletter')+'&body='+encodeURIComponent('Email para subscrever: '+email);
     return false;
   }
+
+  document.querySelectorAll('.photo-carousel').forEach(function(carousel){
+    const dotsWrap = carousel.parentElement.querySelector('.photo-dots');
+    if(!dotsWrap) return;
+    const dots = dotsWrap.querySelectorAll('.dot');
+    carousel.addEventListener('scroll', function(){
+      const index = Math.round(carousel.scrollLeft / carousel.clientWidth);
+      dots.forEach(function(d,i){ d.classList.toggle('active', i===index); });
+    });
+    dots.forEach(function(dot,i){
+      dot.addEventListener('click', function(){
+        carousel.scrollTo({left: i * carousel.clientWidth, behavior:'smooth'});
+      });
+    });
+  });
