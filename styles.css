@@ -165,7 +165,7 @@
 
   /* Footer */
   footer{background:#0C0A08; border-top:1px solid var(--line); padding-block:56px 24px;}
-  .footer-grid{display:grid; grid-template-columns:1.4fr 1fr 1fr 1.3fr; gap:36px; margin-bottom:36px;}
+  .footer-grid{display:grid; grid-template-columns:1.4fr 1fr 1fr; gap:36px; margin-bottom:36px;}
   .footer-col h4{color:var(--heading); font-size:0.85rem; letter-spacing:.05em; margin-bottom:16px;}
   .footer-col ul{list-style:none;}
   .footer-col li{margin-bottom:9px;}
@@ -173,8 +173,6 @@
   .footer-col a:hover{color:var(--gold);}
   .footer-about img{height:34px; margin-bottom:12px;}
   .footer-about p{font-size:0.83rem; max-width:34ch;}
-  .newsletter-form{display:flex; gap:8px; margin-bottom:8px;}
-  .newsletter-form input{flex:1; background:var(--surface); border:1px solid var(--line); color:var(--heading); padding:10px 12px; border-radius:3px; font-size:0.85rem;}
   .social-row{display:flex; gap:16px; margin-top:16px;}
   .social-row .icon{width:19px; height:19px; color:var(--body);}
   .social-row a:hover .icon{color:var(--gold);}
