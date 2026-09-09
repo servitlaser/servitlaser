@@ -1,4 +1,8 @@
   let cart = [];
+  function goToProduct(url, event){
+    if(event.target.closest('.dot')) return;
+    window.location.href = url;
+  }
   let lockedScrollY = 0;
   function lockScroll(){
     lockedScrollY = window.scrollY;
@@ -90,12 +94,6 @@
     const detalhe = document.getElementById('p-detalhe').value.trim();
     const body = 'Name: '+nome+'\nProduct: '+produto+'\nWhat I want engraved:\n'+detalhe;
     window.location.href = 'mailto:info@servitlaser.com?subject='+encodeURIComponent('Customization Request')+'&body='+encodeURIComponent(body);
-  }
-  function subscribeNewsletter(e){
-    e.preventDefault();
-    const email = document.getElementById('newsletterEmail').value;
-    window.location.href = 'mailto:info@servitlaser.com?subject='+encodeURIComponent('New newsletter subscription')+'&body='+encodeURIComponent('Email to subscribe: '+email);
-    return false;
   }
 
   document.querySelectorAll('.photo-carousel').forEach(function(carousel){

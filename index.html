@@ -101,7 +101,7 @@
       <div class="section-head light"><h2>Featured Products</h2></div>
       <div class="products-grid">
         <div class="product-card" id="produto-portachaves" data-name="Custom Keychain">
-          <div class="product-photo">
+          <div class="product-photo" onclick="goToProduct('porta-chaves.html', event)" style="cursor:pointer;">
             <span class="badge-novo">NOVO</span>
             <div class="photo-carousel">
               <div class="photo-track">
@@ -112,7 +112,7 @@
             <div class="photo-dots"><button class="dot active" aria-label="Image 1"></button><button class="dot" aria-label="Image 2"></button></div>
           </div>
           <div class="info">
-            <h3>Custom Keychain</h3>
+            <h3><a href="porta-chaves.html">Custom Keychain</a></h3>
             <p class="price">€6,90</p>
             <button class="btn btn-primary btn-sm" onclick="addToCart('Custom Keychain', 6.90)">Customize</button>
             <form class="paypal-form" action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank">
@@ -129,7 +129,7 @@
           </div>
         </div>
         <div class="product-card" id="produto-caixa" data-name="Custom Card Box">
-          <div class="product-photo">
+          <div class="product-photo" onclick="goToProduct('caixas-de-cartas.html', event)" style="cursor:pointer;">
             <span class="badge-novo">NOVO</span>
             <div class="photo-carousel">
               <div class="photo-track">
@@ -141,7 +141,7 @@
             <div class="photo-dots"><button class="dot active" aria-label="Image 1"></button><button class="dot" aria-label="Image 2"></button><button class="dot" aria-label="Image 3"></button></div>
           </div>
           <div class="info">
-            <h3>Custom Card Box</h3>
+            <h3><a href="caixas-de-cartas.html">Custom Card Box</a></h3>
             <p class="price">€10,00</p>
             <button class="btn btn-primary btn-sm" onclick="addToCart('Custom Card Box', 10.00)">Customize</button>
             <form class="paypal-form" action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank">
@@ -158,9 +158,9 @@
           </div>
         </div>
         <div class="product-card" id="produto-marcador" data-name="Custom Bookmark">
-          <div class="product-photo"><span class="badge-novo">NOVO</span><img src="marcador-produto.jpg" alt="Wooden bookmark laser engraved"></div>
+          <div class="product-photo" onclick="goToProduct('marcadores-de-livro.html', event)" style="cursor:pointer;"><span class="badge-novo">NOVO</span><img src="marcador-produto.jpg" alt="Wooden bookmark laser engraved"></div>
           <div class="info">
-            <h3>Custom Bookmark</h3>
+            <h3><a href="marcadores-de-livro.html">Custom Bookmark</a></h3>
             <p class="price">€6,00</p>
             <button class="btn btn-primary btn-sm" onclick="addToCart('Custom Bookmark', 6.00)">Customize</button>
             <form class="paypal-form" action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank">

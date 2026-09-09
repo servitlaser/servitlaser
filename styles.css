@@ -121,6 +121,8 @@
   .badge-novo{position:absolute; top:10px; left:10px; background:var(--ink-l); color:var(--light-bg); font-size:0.65rem; font-weight:600; letter-spacing:.05em; padding:3px 9px; border-radius:2px;}
   .product-card .info{padding:18px; display:flex; flex-direction:column; flex:1;}
   .product-card h3{color:var(--ink-l); font-size:1.02rem; margin-bottom:8px;}
+  .product-card h3 a{color:inherit; text-decoration:none;}
+  .product-card h3 a:hover{text-decoration:underline;}
   .product-card .price{font-family:'Fraunces',serif; color:var(--ink-l); font-weight:600; font-size:1.1rem; margin-bottom:14px;}
   .product-card .btn{margin-top:auto;}
   .paypal-form{margin-top:12px; display:flex; flex-direction:column; gap:8px;}
