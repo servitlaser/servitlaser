@@ -100,16 +100,16 @@
     <div class="wrap">
       <div class="section-head light"><h2>Featured Products</h2></div>
       <div class="products-grid">
-        <div class="product-card" id="produto-marcador" data-name="Custom Bookmark">
+        <div class="product-card" id="produto-marcador" data-name="Bookmark">
           <div class="product-photo" onclick="goToProduct('marcadores-de-livro.html', event)" style="cursor:pointer;"><span class="badge-novo">NOVO</span><img src="marcador-produto.jpg" alt="Wooden bookmark laser engraved"></div>
           <div class="info">
-            <h3><a href="marcadores-de-livro.html">Custom Bookmark</a></h3>
+            <h3><a href="marcadores-de-livro.html">Bookmark</a></h3>
             <p class="price">€6,00</p>
-            <button class="btn btn-primary btn-sm" onclick="addToCart('Custom Bookmark', 6.00)">Customize</button>
+            <button class="btn btn-primary btn-sm" onclick="addToCart('Bookmark', 6.00)">Customize</button>
             <form class="paypal-form" action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank">
               <input type="hidden" name="cmd" value="_xclick">
               <input type="hidden" name="business" value="O-TEU-EMAIL-PAYPAL@exemplo.com">
-              <input type="hidden" name="item_name" value="Custom Bookmark">
+              <input type="hidden" name="item_name" value="Bookmark">
               <input type="hidden" name="amount" value="6.00">
               <input type="hidden" name="currency_code" value="EUR">
               <input type="hidden" name="on0" value="Customization">
@@ -119,7 +119,7 @@
             </form>
           </div>
         </div>
-        <div class="product-card" id="produto-caixa" data-name="Custom Card Box">
+        <div class="product-card" id="produto-caixa" data-name="Card Box">
           <div class="product-photo" onclick="goToProduct('caixas-de-cartas.html', event)" style="cursor:pointer;">
             <span class="badge-novo">NOVO</span>
             <div class="photo-carousel">
@@ -132,13 +132,13 @@
             <div class="photo-dots"><button class="dot active" aria-label="Image 1"></button><button class="dot" aria-label="Image 2"></button><button class="dot" aria-label="Image 3"></button></div>
           </div>
           <div class="info">
-            <h3><a href="caixas-de-cartas.html">Custom Card Box</a></h3>
+            <h3><a href="caixas-de-cartas.html">Card Box</a></h3>
             <p class="price">€10,00</p>
-            <button class="btn btn-primary btn-sm" onclick="addToCart('Custom Card Box', 10.00)">Customize</button>
+            <button class="btn btn-primary btn-sm" onclick="addToCart('Card Box', 10.00)">Customize</button>
             <form class="paypal-form" action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank">
               <input type="hidden" name="cmd" value="_xclick">
               <input type="hidden" name="business" value="O-TEU-EMAIL-PAYPAL@exemplo.com">
-              <input type="hidden" name="item_name" value="Custom Card Box">
+              <input type="hidden" name="item_name" value="Card Box">
               <input type="hidden" name="amount" value="10.00">
               <input type="hidden" name="currency_code" value="EUR">
               <input type="hidden" name="on0" value="Customization">
@@ -148,7 +148,7 @@
             </form>
           </div>
         </div>
-        <div class="product-card" id="produto-portachaves" data-name="Custom Keychain">
+        <div class="product-card" id="produto-portachaves" data-name="Keychain">
           <div class="product-photo" onclick="goToProduct('porta-chaves.html', event)" style="cursor:pointer;">
             <span class="badge-novo">NOVO</span>
             <div class="photo-carousel">
@@ -160,13 +160,13 @@
             <div class="photo-dots"><button class="dot active" aria-label="Image 1"></button><button class="dot" aria-label="Image 2"></button></div>
           </div>
           <div class="info">
-            <h3><a href="porta-chaves.html">Custom Keychain</a></h3>
+            <h3><a href="porta-chaves.html">Keychain</a></h3>
             <p class="price">€6,90</p>
-            <button class="btn btn-primary btn-sm" onclick="addToCart('Custom Keychain', 6.90)">Customize</button>
+            <button class="btn btn-primary btn-sm" onclick="addToCart('Keychain', 6.90)">Customize</button>
             <form class="paypal-form" action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank">
               <input type="hidden" name="cmd" value="_xclick">
               <input type="hidden" name="business" value="O-TEU-EMAIL-PAYPAL@exemplo.com">
-              <input type="hidden" name="item_name" value="Custom Keychain">
+              <input type="hidden" name="item_name" value="Keychain">
               <input type="hidden" name="amount" value="6.90">
               <input type="hidden" name="currency_code" value="EUR">
               <input type="hidden" name="on0" value="Customization">
@@ -240,7 +240,7 @@
       <label class="field-label" for="p-nome">Your name</label>
       <input type="text" id="p-nome" placeholder="Your name">
       <label class="field-label" for="p-produto">Product</label>
-      <input type="text" id="p-produto" placeholder="E.g. Custom Card Box">
+      <input type="text" id="p-produto" placeholder="E.g. Card Box">
       <label class="field-label" for="p-detalhe">What you'd like engraved</label>
       <textarea id="p-detalhe" placeholder="Name, date, initials, or describe the image you want"></textarea>
       <button class="btn btn-primary btn-block" onclick="enviarPersonalizacao()">Send Request by Email</button>
