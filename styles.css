@@ -27,7 +27,7 @@
   /* Header */
   .site-header{position:sticky; top:0; z-index:30; background:#14120E; border-bottom:1px solid var(--line);}
   .site-header .wrap{display:flex; align-items:center; justify-content:space-between; padding-block:10px; gap:20px;}
-  .logo img{height:52px; width:auto;}
+  .logo img{width:min(60vw, 280px); height:auto; display:block;}
   nav.main-nav ul{display:flex; gap:26px; list-style:none;}
   nav.main-nav > ul > li{position:relative;}
   nav.main-nav a{font-size:0.9rem; letter-spacing:.02em; color:var(--body); transition:color .15s ease;}
@@ -204,7 +204,7 @@
     .step{width:100%;}
   }
   @media (max-width:600px){
-    .logo img{height:46px;}
+    .logo img{width:min(55vw, 230px);}
     .announce .wrap{gap:16px; font-size:0.7rem;}
     .products-grid{grid-template-columns:1fr;}
     .why-grid{grid-template-columns:1fr;}
