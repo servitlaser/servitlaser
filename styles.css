@@ -187,7 +187,7 @@
   }
   @media (max-width:860px){
     section{padding-block:56px;}
-    .hero{padding-top:0;}
+    .hero{padding-top:14px;}
     .hero .wrap{grid-template-columns:1fr; padding-block:0 48px;}
     .hero .hero-art{order:-1; width:100vw; max-width:100vw; position:relative; left:50%; margin-left:-50vw;}
     .badges .wrap{grid-template-columns:1fr; gap:16px; padding-block:20px;}
