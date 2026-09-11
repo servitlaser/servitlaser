@@ -188,7 +188,7 @@
   @media (max-width:860px){
     section{padding-block:56px;}
     .hero .wrap{grid-template-columns:1fr; padding-block:36px 48px;}
-    .hero .hero-art{order:-1; max-width:300px; margin-inline:auto;}
+    .hero .hero-art{order:-1; width:100vw; max-width:100vw; position:relative; left:50%; margin-left:-50vw;}
     .badges .wrap{grid-template-columns:1fr; gap:16px; padding-block:20px;}
     nav.main-nav{position:fixed; top:105px; left:0; right:0; bottom:0; background:var(--bg); padding:20px 24px; transform:translateX(100%); transition:transform .2s ease; overflow-y:auto;}
     nav.main-nav.open{transform:translateX(0);}
