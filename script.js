@@ -116,6 +116,12 @@
     item.addEventListener('mouseleave', function(){ item.classList.remove('open'); });
   });
 
+  document.documentElement.addEventListener('mouseleave', function(){
+    document.querySelectorAll('.has-dropdown.open').forEach(function(item){
+      item.classList.remove('open');
+    });
+  });
+
   document.addEventListener('click', function(e){
     document.querySelectorAll('.has-dropdown.open').forEach(function(item){
       if(!item.contains(e.target)) item.classList.remove('open');
