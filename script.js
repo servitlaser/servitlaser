@@ -115,3 +115,18 @@
     item.addEventListener('mouseenter', function(){ item.classList.add('open'); });
     item.addEventListener('mouseleave', function(){ item.classList.remove('open'); });
   });
+
+  document.addEventListener('click', function(e){
+    document.querySelectorAll('.has-dropdown.open').forEach(function(item){
+      if(!item.contains(e.target)) item.classList.remove('open');
+    });
+  });
+  document.addEventListener('mousemove', function(e){
+    document.querySelectorAll('.has-dropdown.open').forEach(function(item){
+      const r = item.getBoundingClientRect();
+      const margin = 40;
+      if(e.clientX < r.left - margin || e.clientX > r.right + margin || e.clientY < r.top - margin || e.clientY > r.bottom + margin){
+        item.classList.remove('open');
+      }
+    });
+  });
