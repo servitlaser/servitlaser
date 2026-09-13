@@ -37,7 +37,7 @@
   .dropdown li{padding:0;}
   .dropdown a{display:block; padding:9px 12px; border-radius:3px; font-size:0.87rem;}
   .dropdown a:hover{background:var(--surface-2);}
-  .has-dropdown:hover .dropdown{display:block;}
+  .has-dropdown:hover .dropdown, .has-dropdown.open .dropdown{display:block;}
   .header-icons{display:flex; align-items:center; gap:18px;}
   .header-icons button{color:var(--heading); position:relative; display:flex;}
   .header-icons button:hover{color:var(--gold);}

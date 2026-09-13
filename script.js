@@ -110,3 +110,8 @@
       });
     });
   });
+
+  document.querySelectorAll('.has-dropdown').forEach(function(item){
+    item.addEventListener('mouseenter', function(){ item.classList.add('open'); });
+    item.addEventListener('mouseleave', function(){ item.classList.remove('open'); });
+  });
