@@ -2,27 +2,13 @@
   let cartIdCounter = 1;
   const SHIPPING_RATE_STANDARD = 7.90;
   const SHIPPING_RATE_EXTENDED = 9.90;
-  const SHIPPING_TIERS = {
-    'Bookmark': { standardMax: 10, extendedMax: 20 },
-    'Card Box': { standardMax: 4, extendedMax: 8 },
-    'Keychain': { standardMax: 10, extendedMax: 20 },
-  };
+  const SHIPPING_STANDARD_MAX_QTY = 5;
+  const SHIPPING_EXTENDED_MAX_QTY = 10;
   function getShippingInfo(){
-    let needsExtended = false;
-    let blocked = false;
-    const overLimitItems = [];
-    cart.forEach(function(i){
-      const t = SHIPPING_TIERS[i.name];
-      if(!t) return;
-      if(i.qty > t.extendedMax){
-        blocked = true;
-        overLimitItems.push({ name: i.name, max: t.extendedMax });
-      } else if(i.qty > t.standardMax){
-        needsExtended = true;
-      }
-    });
-    const cost = cart.length === 0 ? 0 : (needsExtended || blocked ? SHIPPING_RATE_EXTENDED : SHIPPING_RATE_STANDARD);
-    return { blocked: blocked, overLimitItems: overLimitItems, cost: cost };
+    const totalQty = cart.reduce(function(s,i){ return s + i.qty; }, 0);
+    const blocked = totalQty > SHIPPING_EXTENDED_MAX_QTY;
+    const cost = totalQty === 0 ? 0 : (totalQty > SHIPPING_STANDARD_MAX_QTY ? SHIPPING_RATE_EXTENDED : SHIPPING_RATE_STANDARD);
+    return { blocked: blocked, totalQty: totalQty, cost: cost };
   }
   function goToProduct(url, event){
     if(event.target.closest('.dot')) return;
@@ -131,8 +117,7 @@
     shippingEl.textContent = '€'+shipping.toFixed(2).replace('.',',');
     totalEl.textContent = '€'+total.toFixed(2).replace('.',',');
     if(shippingInfo.blocked){
-      const names = shippingInfo.overLimitItems.map(function(i){ return i.name+' (max '+i.max+')'; }).join(', ');
-      warningEl.textContent = 'Your order includes more '+names+' than we can ship in one order. Please contact us at info@servitlaser.com for a shipping quote before paying.';
+      warningEl.textContent = 'Your order has '+shippingInfo.totalQty+' items, which is more than we can ship in one order (max 10). Please contact us at info@servitlaser.com for a shipping quote before paying.';
       warningEl.style.display = 'block';
     } else {
       warningEl.textContent = '';
@@ -155,7 +140,7 @@
       '\nShipping: €'+shipping.toFixed(2).replace('.',',')+
       '\nTotal: €'+total.toFixed(2).replace('.',',');
     if(shippingInfo.blocked){
-      body += '\n\nNote: this order has more '+shippingInfo.overLimitItems.map(function(i){ return i.name+' (max '+i.max+')'; }).join(', ')+' than we can ship in one order — please confirm the shipping cost with me.';
+      body += '\n\nNote: this order has '+shippingInfo.totalQty+' items, more than we can ship in one order (max 10) — please confirm the shipping cost with me.';
     }
     const url = 'mailto:info@servitlaser.com?subject='+encodeURIComponent('New order - SerVit Laser')+'&body='+encodeURIComponent(body);
     window.location.href = url;
@@ -164,8 +149,7 @@
     if(cart.length === 0){ alert('Your cart is empty.'); return; }
     const shippingInfo = getShippingInfo();
     if(shippingInfo.blocked){
-      const names = shippingInfo.overLimitItems.map(function(i){ return i.name+' (max '+i.max+')'; }).join(', ');
-      alert('Your order includes more '+names+' than we can ship in one order.\n\nPlease email info@servitlaser.com for a shipping quote before paying.');
+      alert('Your order has '+shippingInfo.totalQty+' items, which is more than we can ship in one order (max 10).\n\nPlease email info@servitlaser.com for a shipping quote before paying.');
       return;
     }
     const form = document.createElement('form');
