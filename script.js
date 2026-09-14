@@ -77,14 +77,12 @@
   }
   function checkout(){
     if(cart.length === 0){ alert('Your cart is empty.'); return; }
-    const note = document.getElementById('nota-personalizacao').value.trim();
     const lines = cart.map(function(i){
       const priceStr = i.price > 0 ? ('€'+(i.price*i.qty).toFixed(2).replace('.',',')) : 'a combinar';
       return '- '+i.name+' x'+i.qty+' — '+priceStr;
     });
     const total = cart.reduce(function(s,i){ return s + i.price*i.qty; }, 0);
-    let body = 'Hello! I would like to order:\n\n'+lines.join('\n')+'\n\nTotal: €'+total.toFixed(2).replace('.',',');
-    if(note) body += '\n\nCustomization:\n'+note;
+    const body = 'Hello! I would like to order:\n\n'+lines.join('\n')+'\n\nTotal: €'+total.toFixed(2).replace('.',',');
     const url = 'mailto:info@servitlaser.com?subject='+encodeURIComponent('New order - SerVit Laser')+'&body='+encodeURIComponent(body);
     window.location.href = url;
   }
