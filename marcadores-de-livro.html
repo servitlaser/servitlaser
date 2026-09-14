@@ -63,7 +63,10 @@
     <p class="cart-empty">Your cart is empty.</p>
   </div>
   <div class="cart-foot">
-    <div class="cart-subtotal"><span>Total</span><span id="cartTotal">€0,00</span></div>
+    <p class="cart-warning" id="cartWarning" style="display:none;"></p>
+    <div class="cart-subtotal"><span>Subtotal</span><span id="cartSubtotal">€0,00</span></div>
+    <div class="cart-subtotal"><span>Shipping</span><span id="cartShipping">€0,00</span></div>
+    <div class="cart-subtotal cart-total-row"><span>Total</span><span id="cartTotal">€0,00</span></div>
     <button class="btn btn-primary btn-block" onclick="payWithPaypal()">Pay with PayPal</button>
     <button class="btn btn-ghost btn-block" onclick="checkout()">Checkout by email</button>
   </div>
