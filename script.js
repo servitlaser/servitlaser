@@ -1,12 +1,28 @@
   let cart = [];
   let cartIdCounter = 1;
-  const SHIPPING_FLAT = 7.90;
-  const SHIPPING_MAX_QTY = { 'Bookmark': 10, 'Card Box': 4, 'Keychain': 10 };
-  function getOverLimitItems(){
-    return cart.filter(function(i){
-      const max = SHIPPING_MAX_QTY[i.name];
-      return max && i.qty > max;
+  const SHIPPING_RATE_STANDARD = 7.90;
+  const SHIPPING_RATE_EXTENDED = 9.90;
+  const SHIPPING_TIERS = {
+    'Bookmark': { standardMax: 10, extendedMax: 20 },
+    'Card Box': { standardMax: 4, extendedMax: 8 },
+    'Keychain': { standardMax: 10, extendedMax: 20 },
+  };
+  function getShippingInfo(){
+    let needsExtended = false;
+    let blocked = false;
+    const overLimitItems = [];
+    cart.forEach(function(i){
+      const t = SHIPPING_TIERS[i.name];
+      if(!t) return;
+      if(i.qty > t.extendedMax){
+        blocked = true;
+        overLimitItems.push({ name: i.name, max: t.extendedMax });
+      } else if(i.qty > t.standardMax){
+        needsExtended = true;
+      }
     });
+    const cost = cart.length === 0 ? 0 : (needsExtended || blocked ? SHIPPING_RATE_EXTENDED : SHIPPING_RATE_STANDARD);
+    return { blocked: blocked, overLimitItems: overLimitItems, cost: cost };
   }
   function goToProduct(url, event){
     if(event.target.closest('.dot')) return;
@@ -108,15 +124,15 @@
       }).join('');
     }
     const subtotal = cart.reduce(function(s,i){ return s + i.price*i.qty; }, 0);
-    const shipping = cart.length > 0 ? SHIPPING_FLAT : 0;
+    const shippingInfo = getShippingInfo();
+    const shipping = shippingInfo.cost;
     const total = subtotal + shipping;
     subtotalEl.textContent = '€'+subtotal.toFixed(2).replace('.',',');
     shippingEl.textContent = '€'+shipping.toFixed(2).replace('.',',');
     totalEl.textContent = '€'+total.toFixed(2).replace('.',',');
-    const overLimit = getOverLimitItems();
-    if(overLimit.length > 0){
-      const names = overLimit.map(function(i){ return i.name; }).join(', ');
-      warningEl.textContent = 'Your order includes more '+names+' than fit in one standard shipment at this rate. Please contact us at info@servitlaser.com for a shipping quote before paying.';
+    if(shippingInfo.blocked){
+      const names = shippingInfo.overLimitItems.map(function(i){ return i.name+' (max '+i.max+')'; }).join(', ');
+      warningEl.textContent = 'Your order includes more '+names+' than we can ship in one order. Please contact us at info@servitlaser.com for a shipping quote before paying.';
       warningEl.style.display = 'block';
     } else {
       warningEl.textContent = '';
@@ -131,24 +147,25 @@
       return '- '+i.name+' x'+i.qty+' — '+priceStr+noteStr;
     });
     const subtotal = cart.reduce(function(s,i){ return s + i.price*i.qty; }, 0);
-    const shipping = SHIPPING_FLAT;
+    const shippingInfo = getShippingInfo();
+    const shipping = shippingInfo.cost;
     const total = subtotal + shipping;
     let body = 'Hello! I would like to order:\n\n'+lines.join('\n')+
       '\n\nSubtotal: €'+subtotal.toFixed(2).replace('.',',')+
       '\nShipping: €'+shipping.toFixed(2).replace('.',',')+
       '\nTotal: €'+total.toFixed(2).replace('.',',');
-    const overLimit = getOverLimitItems();
-    if(overLimit.length > 0){
-      body += '\n\nNote: this order has more '+overLimit.map(function(i){ return i.name; }).join(', ')+' than fit in one standard shipment — please confirm the shipping cost with me.';
+    if(shippingInfo.blocked){
+      body += '\n\nNote: this order has more '+shippingInfo.overLimitItems.map(function(i){ return i.name+' (max '+i.max+')'; }).join(', ')+' than we can ship in one order — please confirm the shipping cost with me.';
     }
     const url = 'mailto:info@servitlaser.com?subject='+encodeURIComponent('New order - SerVit Laser')+'&body='+encodeURIComponent(body);
     window.location.href = url;
   }
   function payWithPaypal(){
     if(cart.length === 0){ alert('Your cart is empty.'); return; }
-    const overLimit = getOverLimitItems();
-    if(overLimit.length > 0){
-      alert('Your order includes more '+overLimit.map(function(i){ return i.name; }).join(', ')+' than fit in one standard shipment at this rate.\n\nPlease email info@servitlaser.com for a shipping quote before paying.');
+    const shippingInfo = getShippingInfo();
+    if(shippingInfo.blocked){
+      const names = shippingInfo.overLimitItems.map(function(i){ return i.name+' (max '+i.max+')'; }).join(', ');
+      alert('Your order includes more '+names+' than we can ship in one order.\n\nPlease email info@servitlaser.com for a shipping quote before paying.');
       return;
     }
     const form = document.createElement('form');
@@ -178,7 +195,7 @@
     });
     const shippingIndex = cart.length + 1;
     addField('item_name_'+shippingIndex, 'Shipping (Posti, Finland)');
-    addField('amount_'+shippingIndex, SHIPPING_FLAT.toFixed(2));
+    addField('amount_'+shippingIndex, shippingInfo.cost.toFixed(2));
     addField('quantity_'+shippingIndex, '1');
     document.body.appendChild(form);
     form.submit();
