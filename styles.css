@@ -59,7 +59,12 @@
   .cart-head h3{font-size:1.15rem;}
   .cart-items{flex:1; overflow-y:auto; padding:16px 22px;}
   .cart-item{display:flex; justify-content:space-between; align-items:flex-start; gap:10px; padding-block:12px; border-bottom:1px solid var(--line); font-size:0.9rem;}
-  .cart-item button{color:var(--body); font-size:1.1rem;}
+  .cart-item-actions{display:flex; align-items:center; gap:10px; flex-shrink:0;}
+  .qty-stepper{display:flex; align-items:center; gap:0; border:1px solid var(--line); border-radius:3px; overflow:hidden;}
+  .qty-stepper button{width:26px; height:26px; font-size:1rem; line-height:1; color:var(--heading); background:transparent;}
+  .qty-stepper button:hover{background:var(--surface-2);}
+  .qty-stepper span{min-width:22px; text-align:center; font-size:0.85rem; color:var(--heading);}
+  .cart-item-remove{color:var(--body); font-size:1.1rem;}
   .cart-empty{color:var(--body); font-size:0.9rem; padding-block:20px;}
   .cart-foot{padding:20px 22px; border-top:1px solid var(--line);}
   .cart-foot .btn + .btn{margin-top:10px;}

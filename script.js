@@ -75,6 +75,12 @@
     cart = cart.filter(function(i){ return i.id !== id; });
     renderCart();
   }
+  function changeQty(id, delta){
+    const item = cart.find(function(i){ return i.id === id; });
+    if(!item) return;
+    item.qty = Math.max(1, item.qty + delta);
+    renderCart();
+  }
   function renderCart(){
     const itemsEl = document.getElementById('cartItems');
     const countEl = document.getElementById('cartCount');
@@ -90,7 +96,15 @@
       itemsEl.innerHTML = cart.map(function(i){
         const priceStr = i.price > 0 ? ('€'+(i.price*i.qty).toFixed(2).replace('.',',')) : 'A combinar';
         const noteHtml = i.note ? ('<br><small class="cart-item-note">Engraving: '+i.note+'</small>') : '';
-        return '<div class="cart-item"><span>'+i.name+' x'+i.qty+'<br><small>'+priceStr+'</small>'+noteHtml+'</span><button onclick="removeFromCart('+i.id+')">✕</button></div>';
+        return '<div class="cart-item"><span>'+i.name+'<br><small>'+priceStr+'</small>'+noteHtml+'</span>'+
+          '<div class="cart-item-actions">'+
+          '<div class="qty-stepper">'+
+          '<button onclick="changeQty('+i.id+', -1)" aria-label="Decrease quantity">−</button>'+
+          '<span>'+i.qty+'</span>'+
+          '<button onclick="changeQty('+i.id+', 1)" aria-label="Increase quantity">+</button>'+
+          '</div>'+
+          '<button class="cart-item-remove" onclick="removeFromCart('+i.id+')" aria-label="Remove item">✕</button>'+
+          '</div></div>';
       }).join('');
     }
     const subtotal = cart.reduce(function(s,i){ return s + i.price*i.qty; }, 0);
