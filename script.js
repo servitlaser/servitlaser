@@ -1,4 +1,5 @@
   let cart = [];
+  let cartIdCounter = 1;
   function goToProduct(url, event){
     if(event.target.closest('.dot')) return;
     window.location.href = url;
@@ -48,14 +49,22 @@
     document.getElementById('cartOverlay').classList.remove('open');
     unlockScroll();
   }
-  function addToCart(name, price){
-    const existing = cart.find(function(i){ return i.name === name; });
-    if(existing){ existing.qty += 1; } else { cart.push({name:name, price:price, qty:1}); }
+  function addToCart(name, price, engraveId){
+    let note = '';
+    if(engraveId){
+      const input = document.getElementById(engraveId);
+      if(input){
+        note = input.value.trim();
+        input.value = '';
+      }
+    }
+    const existing = cart.find(function(i){ return i.name === name && i.note === note; });
+    if(existing){ existing.qty += 1; } else { cart.push({id:cartIdCounter++, name:name, price:price, qty:1, note:note}); }
     renderCart();
     openCart();
   }
-  function removeFromCart(name){
-    cart = cart.filter(function(i){ return i.name !== name; });
+  function removeFromCart(id){
+    cart = cart.filter(function(i){ return i.id !== id; });
     renderCart();
   }
   function renderCart(){
@@ -65,11 +74,12 @@
     const totalQty = cart.reduce(function(s,i){ return s+i.qty; }, 0);
     countEl.textContent = totalQty;
     if(cart.length === 0){
-      itemsEl.innerHTML = '<p class="cart-empty">O carrinho está vazio.</p>';
+      itemsEl.innerHTML = '<p class="cart-empty">Your cart is empty.</p>';
     } else {
       itemsEl.innerHTML = cart.map(function(i){
         const priceStr = i.price > 0 ? ('€'+(i.price*i.qty).toFixed(2).replace('.',',')) : 'A combinar';
-        return '<div class="cart-item"><span>'+i.name+' x'+i.qty+'<br><small>'+priceStr+'</small></span><button onclick="removeFromCart(\''+i.name.replace(/'/g,"\\'")+'\')">✕</button></div>';
+        const noteHtml = i.note ? ('<br><small class="cart-item-note">Engraving: '+i.note+'</small>') : '';
+        return '<div class="cart-item"><span>'+i.name+' x'+i.qty+'<br><small>'+priceStr+'</small>'+noteHtml+'</span><button onclick="removeFromCart('+i.id+')">✕</button></div>';
       }).join('');
     }
     const total = cart.reduce(function(s,i){ return s + i.price*i.qty; }, 0);
@@ -79,12 +89,44 @@
     if(cart.length === 0){ alert('Your cart is empty.'); return; }
     const lines = cart.map(function(i){
       const priceStr = i.price > 0 ? ('€'+(i.price*i.qty).toFixed(2).replace('.',',')) : 'a combinar';
-      return '- '+i.name+' x'+i.qty+' — '+priceStr;
+      const noteStr = i.note ? (' (Engraving: '+i.note+')') : '';
+      return '- '+i.name+' x'+i.qty+' — '+priceStr+noteStr;
     });
     const total = cart.reduce(function(s,i){ return s + i.price*i.qty; }, 0);
     const body = 'Hello! I would like to order:\n\n'+lines.join('\n')+'\n\nTotal: €'+total.toFixed(2).replace('.',',');
     const url = 'mailto:info@servitlaser.com?subject='+encodeURIComponent('New order - SerVit Laser')+'&body='+encodeURIComponent(body);
     window.location.href = url;
+  }
+  function payWithPaypal(){
+    if(cart.length === 0){ alert('Your cart is empty.'); return; }
+    const form = document.createElement('form');
+    form.method = 'post';
+    form.action = 'https://www.paypal.com/cgi-bin/webscr';
+    form.target = '_blank';
+    function addField(name, value){
+      const input = document.createElement('input');
+      input.type = 'hidden';
+      input.name = name;
+      input.value = value;
+      form.appendChild(input);
+    }
+    addField('cmd', '_cart');
+    addField('upload', '1');
+    addField('business', 'O-TEU-EMAIL-PAYPAL@exemplo.com');
+    addField('currency_code', 'EUR');
+    cart.forEach(function(i, idx){
+      const n = idx + 1;
+      addField('item_name_'+n, i.name);
+      addField('amount_'+n, i.price.toFixed(2));
+      addField('quantity_'+n, i.qty);
+      if(i.note){
+        addField('on0_'+n, 'Customization');
+        addField('os0_'+n, i.note);
+      }
+    });
+    document.body.appendChild(form);
+    form.submit();
+    document.body.removeChild(form);
   }
   function enviarPersonalizacao(){
     const nome = document.getElementById('p-nome').value.trim();

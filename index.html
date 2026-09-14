@@ -64,7 +64,8 @@
   </div>
   <div class="cart-foot">
     <div class="cart-subtotal"><span>Total</span><span id="cartTotal">€0,00</span></div>
-    <button class="btn btn-primary btn-block" onclick="checkout()">Checkout by email</button>
+    <button class="btn btn-primary btn-block" onclick="payWithPaypal()">Pay with PayPal</button>
+    <button class="btn btn-ghost btn-block" onclick="checkout()">Checkout by email</button>
   </div>
 </aside>
 
@@ -103,18 +104,11 @@
           <div class="info">
             <h3><a href="marcadores-de-livro.html">Bookmark</a></h3>
             <p class="price">€6,00</p>
-            <button class="btn btn-primary btn-sm" onclick="addToCart('Bookmark', 6.00)">Add to Cart</button>
-            <form class="paypal-form" action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank">
-              <input type="hidden" name="cmd" value="_xclick">
-              <input type="hidden" name="business" value="O-TEU-EMAIL-PAYPAL@exemplo.com">
-              <input type="hidden" name="item_name" value="Bookmark">
-              <input type="hidden" name="amount" value="6.00">
-              <input type="hidden" name="currency_code" value="EUR">
-              <input type="hidden" name="on0" value="Customization">
+            <button class="btn btn-primary btn-sm" onclick="addToCart('Bookmark', 6.00, 'grava-marcador')">Add to Cart</button>
+            <div class="engrave-box">
               <label class="engrave-label" for="grava-marcador">What would you like engraved?</label>
-              <input type="text" name="os0" id="grava-marcador" placeholder="Name, date or phrase" required>
-              <button type="submit" class="btn btn-ghost-light btn-sm btn-block">Pay with PayPal</button>
-            </form>
+              <input type="text" id="grava-marcador" placeholder="Name, date or phrase">
+            </div>
           </div>
         </div>
         <div class="product-card" id="produto-caixa" data-name="Card Box">
@@ -132,18 +126,11 @@
           <div class="info">
             <h3><a href="caixas-de-cartas.html">Card Box</a></h3>
             <p class="price">€10,00</p>
-            <button class="btn btn-primary btn-sm" onclick="addToCart('Card Box', 10.00)">Add to Cart</button>
-            <form class="paypal-form" action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank">
-              <input type="hidden" name="cmd" value="_xclick">
-              <input type="hidden" name="business" value="O-TEU-EMAIL-PAYPAL@exemplo.com">
-              <input type="hidden" name="item_name" value="Card Box">
-              <input type="hidden" name="amount" value="10.00">
-              <input type="hidden" name="currency_code" value="EUR">
-              <input type="hidden" name="on0" value="Customization">
+            <button class="btn btn-primary btn-sm" onclick="addToCart('Card Box', 10.00, 'grava-caixa')">Add to Cart</button>
+            <div class="engrave-box">
               <label class="engrave-label" for="grava-caixa">What would you like engraved?</label>
-              <input type="text" name="os0" id="grava-caixa" placeholder="Name, date or initials" required>
-              <button type="submit" class="btn btn-ghost-light btn-sm btn-block">Pay with PayPal</button>
-            </form>
+              <input type="text" id="grava-caixa" placeholder="Name, date or initials">
+            </div>
           </div>
         </div>
         <div class="product-card" id="produto-portachaves" data-name="Keychain">
@@ -160,18 +147,11 @@
           <div class="info">
             <h3><a href="porta-chaves.html">Keychain</a></h3>
             <p class="price">€6,90</p>
-            <button class="btn btn-primary btn-sm" onclick="addToCart('Keychain', 6.90)">Add to Cart</button>
-            <form class="paypal-form" action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank">
-              <input type="hidden" name="cmd" value="_xclick">
-              <input type="hidden" name="business" value="O-TEU-EMAIL-PAYPAL@exemplo.com">
-              <input type="hidden" name="item_name" value="Keychain">
-              <input type="hidden" name="amount" value="6.90">
-              <input type="hidden" name="currency_code" value="EUR">
-              <input type="hidden" name="on0" value="Customization">
+            <button class="btn btn-primary btn-sm" onclick="addToCart('Keychain', 6.90, 'grava-portachaves')">Add to Cart</button>
+            <div class="engrave-box">
               <label class="engrave-label" for="grava-portachaves">What would you like engraved?</label>
-              <input type="text" name="os0" id="grava-portachaves" placeholder="Name, date or initials" required>
-              <button type="submit" class="btn btn-ghost-light btn-sm btn-block">Pay with PayPal</button>
-            </form>
+              <input type="text" id="grava-portachaves" placeholder="Name, date or initials">
+            </div>
           </div>
         </div>
       </div>

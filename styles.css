@@ -62,6 +62,8 @@
   .cart-item button{color:var(--body); font-size:1.1rem;}
   .cart-empty{color:var(--body); font-size:0.9rem; padding-block:20px;}
   .cart-foot{padding:20px 22px; border-top:1px solid var(--line);}
+  .cart-foot .btn + .btn{margin-top:10px;}
+  .cart-item-note{color:var(--gold);}
   .cart-subtotal{display:flex; justify-content:space-between; margin-bottom:14px; font-family:'Fraunces',serif; color:var(--heading); font-size:1.1rem;}
   .cart-foot textarea{width:100%; background:var(--surface-2); border:1px solid var(--line); color:var(--heading); padding:10px; border-radius:3px; font-family:inherit; font-size:0.85rem; margin-bottom:12px; resize:vertical; min-height:60px;}
   .cart-foot .hint{font-size:0.78rem; color:var(--body); margin-bottom:10px;}
@@ -125,9 +127,9 @@
   .product-card h3 a:hover{text-decoration:underline;}
   .product-card .price{font-family:'Fraunces',serif; color:var(--ink-l); font-weight:600; font-size:1.1rem; margin-bottom:14px;}
   .product-card .btn{margin-top:auto;}
-  .paypal-form{margin-top:12px; display:flex; flex-direction:column; gap:8px;}
+  .engrave-box{margin-top:12px; display:flex; flex-direction:column; gap:8px;}
   .engrave-label{font-size:0.78rem; color:var(--body-l); display:block;}
-  .paypal-form input[type="text"]{width:100%; background:#fff; border:1px solid var(--line-l); color:var(--ink-l); padding:9px 11px; border-radius:3px; font-size:0.85rem;}
+  .engrave-box input[type="text"]{width:100%; background:#fff; border:1px solid var(--line-l); color:var(--ink-l); padding:9px 11px; border-radius:3px; font-size:0.85rem;}
   .products-more{text-align:center; margin-top:36px;}
 
   /* How it works */
