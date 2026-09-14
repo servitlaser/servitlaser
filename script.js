@@ -111,28 +111,30 @@
     });
   });
 
+  // Dropdown "Products": hover-intent simples (abrir logo, fechar com pequeno atraso)
+  // em vez de calcular distâncias do rato — evita ficar preso aberto.
   document.querySelectorAll('.has-dropdown').forEach(function(item){
-    item.addEventListener('mouseenter', function(){ item.classList.add('open'); });
-    item.addEventListener('mouseleave', function(){ item.classList.remove('open'); });
+    let closeTimer = null;
+    item.addEventListener('mouseenter', function(){
+      clearTimeout(closeTimer);
+      item.classList.add('open');
+    });
+    item.addEventListener('mouseleave', function(){
+      clearTimeout(closeTimer);
+      closeTimer = setTimeout(function(){ item.classList.remove('open'); }, 200);
+    });
   });
 
-  document.documentElement.addEventListener('mouseleave', function(){
+  function closeAllDropdowns(){
     document.querySelectorAll('.has-dropdown.open').forEach(function(item){
       item.classList.remove('open');
     });
-  });
-
+  }
+  // Redes de segurança: fecha em qualquer clique fora, ao fazer scroll, ou com Escape.
   document.addEventListener('click', function(e){
-    document.querySelectorAll('.has-dropdown.open').forEach(function(item){
-      if(!item.contains(e.target)) item.classList.remove('open');
-    });
+    if(!e.target.closest('.has-dropdown')) closeAllDropdowns();
   });
-  document.addEventListener('mousemove', function(e){
-    document.querySelectorAll('.has-dropdown.open').forEach(function(item){
-      const r = item.getBoundingClientRect();
-      const margin = 40;
-      if(e.clientX < r.left - margin || e.clientX > r.right + margin || e.clientY < r.top - margin || e.clientY > r.bottom + margin){
-        item.classList.remove('open');
-      }
-    });
+  window.addEventListener('scroll', closeAllDropdowns, {passive:true});
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'Escape') closeAllDropdowns();
   });
