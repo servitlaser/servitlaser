@@ -1,0 +1,7 @@
+{
+  "name": "servit-laser-site",
+  "private": true,
+  "dependencies": {
+    "stripe": "^22.0.0"
+  }
+}
