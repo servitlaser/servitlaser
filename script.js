@@ -145,6 +145,29 @@
     const url = 'mailto:info@servitlaser.com?subject='+encodeURIComponent('New order - SerVit Laser')+'&body='+encodeURIComponent(body);
     window.location.href = url;
   }
+  async function payWithStripe(){
+    if(cart.length === 0){ alert('Your cart is empty.'); return; }
+    const shippingInfo = getShippingInfo();
+    if(shippingInfo.blocked){
+      alert('Your order has '+shippingInfo.totalQty+' items, which is more than we can ship in one order (max 10).\n\nPlease email info@servitlaser.com for a shipping quote before paying.');
+      return;
+    }
+    try {
+      const response = await fetch('/create-checkout-session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ cart: cart }),
+      });
+      const data = await response.json();
+      if(data.url){
+        window.location.href = data.url;
+      } else {
+        alert(data.error || 'Something went wrong starting checkout. Please try again or use another payment option.');
+      }
+    } catch(err){
+      alert('Something went wrong starting checkout. Please try again or use another payment option.');
+    }
+  }
   function payWithPaypal(){
     if(cart.length === 0){ alert('Your cart is empty.'); return; }
     const shippingInfo = getShippingInfo();
