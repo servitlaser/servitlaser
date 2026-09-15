@@ -113,6 +113,7 @@ async function createCheckoutSession(request, env) {
   const payload = {
     mode: 'payment',
     ui_mode: 'hosted_page',
+    locale: 'en',
     line_items: line_items,
     success_url: origin + '/success.html',
     cancel_url: origin + '/index.html',
