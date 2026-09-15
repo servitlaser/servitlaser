@@ -1,6 +1,11 @@
 // Cloudflare Pages Function — corre no servidor, nunca no browser.
 // URL: POST /create-checkout-session
 //
+// Fala diretamente com a API da Stripe via fetch, sem precisar da
+// biblioteca "stripe" nem de um package.json — isso evita que o Cloudflare
+// trate o site como um projeto Node/Workers complexo (o que estava a
+// tentar publicar a pasta node_modules como parte do site).
+//
 // A chave secreta do Stripe NUNCA vai neste ficheiro. Fica guardada como
 // "Secret" nas definições do projeto no Cloudflare:
 // Workers & Pages > (o teu projeto) > Settings > Variables and Secrets > Add
@@ -21,6 +26,19 @@ function getShippingCost(totalQty) {
   if (totalQty > 10) return null; // bloqueado
   if (totalQty > 5) return 9.90;
   return 7.90;
+}
+
+// Converte um objeto/array JS na notação de colchetes que a API da Stripe
+// espera (ex: line_items[0][price_data][unit_amount]=600).
+function addParam(params, key, value) {
+  if (value === undefined || value === null) return;
+  if (Array.isArray(value)) {
+    value.forEach(function (v, i) { addParam(params, key + '[' + i + ']', v); });
+  } else if (typeof value === 'object') {
+    Object.keys(value).forEach(function (k) { addParam(params, key + '[' + k + ']', value[k]); });
+  } else {
+    params.append(key, String(value));
+  }
 }
 
 export async function onRequestPost(context) {
@@ -97,23 +115,40 @@ export async function onRequestPost(context) {
     quantity: 1,
   });
 
-  const { default: Stripe } = await import('stripe');
-  const stripe = new Stripe(env.STRIPE_SECRET_KEY, {
-    httpClient: Stripe.createFetchHttpClient(),
-  });
-
   const origin = new URL(request.url).origin;
 
+  const payload = {
+    mode: 'payment',
+    ui_mode: 'hosted_page',
+    line_items: line_items,
+    success_url: origin + '/success.html',
+    cancel_url: origin + '/index.html',
+    billing_address_collection: 'auto',
+    shipping_address_collection: { allowed_countries: ['FI'] },
+  };
+
+  const params = new URLSearchParams();
+  Object.keys(payload).forEach(function (key) { addParam(params, key, payload[key]); });
+
   try {
-    const session = await stripe.checkout.sessions.create({
-      mode: 'payment',
-      ui_mode: 'hosted_page',
-      line_items: line_items,
-      success_url: origin + '/success.html',
-      cancel_url: origin + '/index.html',
-      billing_address_collection: 'auto',
-      shipping_address_collection: { allowed_countries: ['FI'] },
+    const stripeResponse = await fetch('https://api.stripe.com/v1/checkout/sessions', {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Bearer ' + env.STRIPE_SECRET_KEY,
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: params.toString(),
     });
+
+    const session = await stripeResponse.json();
+
+    if (!stripeResponse.ok) {
+      const message = (session.error && session.error.message) ? session.error.message : 'Stripe error.';
+      return new Response(JSON.stringify({ error: message }), {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
 
     return new Response(JSON.stringify({ url: session.url }), {
       headers: { 'Content-Type': 'application/json' },
