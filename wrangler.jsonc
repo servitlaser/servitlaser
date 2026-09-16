@@ -10,6 +10,6 @@
     { "name": "EMAIL", "destination_address": "servitlaser@gmail.com" }
   ],
   "kv_namespaces": [
-    { "binding": "ORDERS_KV", "id": "COLA_AQUI_O_ID_DA_NAMESPACE" }
+    { "binding": "ORDERS_KV", "id": "fb84173bdb6c4963a883c44ed132c318" }
   ]
 }
