@@ -203,10 +203,9 @@ async function getNextOrderNumber(env) {
   return next;
 }
 
-// Vai buscar os artigos da encomenda (com as gravações) e envia o email
-// com tudo o que é preciso para preparar a encomenda.
-async function sendOrderEmail(session, env) {
-  const orderNumber = await getNextOrderNumber(env);
+// Vai buscar os artigos da encomenda (com as gravações) e monta os dados
+// comuns aos dois emails (interno e do cliente).
+async function buildOrderDetails(session, env) {
   const lineItemsResponse = await fetch(
     'https://api.stripe.com/v1/checkout/sessions/' + session.id + '/line_items?expand[]=data.price.product',
     { headers: { 'Authorization': 'Bearer ' + env.STRIPE_SECRET_KEY } }
@@ -223,7 +222,7 @@ async function sendOrderEmail(session, env) {
   }).join('\n');
 
   const customerName = (session.customer_details && session.customer_details.name) || 'N/A';
-  const customerEmail = (session.customer_details && session.customer_details.email) || 'N/A';
+  const customerEmail = (session.customer_details && session.customer_details.email) || null;
   const shipping = session.shipping_details || session.customer_details || {};
   const address = shipping.address || {};
   const addressLines = [
@@ -235,20 +234,58 @@ async function sendOrderEmail(session, env) {
 
   const total = ((session.amount_total || 0) / 100).toFixed(2).replace('.', ',');
 
+  return { lines: lines, customerName: customerName, customerEmail: customerEmail, addressLines: addressLines, total: total };
+}
+
+// Email interno — para o teu Gmail, com os dados para preparares a encomenda.
+// Vai pelo binding EMAIL da Cloudflare (só pode enviar para o teu próprio
+// endereço verificado).
+async function sendOrderEmail(details, orderNumber, env) {
   const orderLabel = orderNumber ? ('Order #' + orderNumber) : 'New order';
 
   const body =
     orderLabel + ' received!\n\n' +
-    'Customer: ' + customerName + ' (' + customerEmail + ')\n\n' +
-    'Shipping address:\n' + (addressLines || 'N/A') + '\n\n' +
-    'Items:\n' + (lines || 'N/A') + '\n\n' +
-    'Total: €' + total;
+    'Customer: ' + details.customerName + ' (' + (details.customerEmail || 'N/A') + ')\n\n' +
+    'Shipping address:\n' + (details.addressLines || 'N/A') + '\n\n' +
+    'Items:\n' + (details.lines || 'N/A') + '\n\n' +
+    'Total: €' + details.total;
 
   await env.EMAIL.send({
     from: 'orders@servitlaser.com',
     to: 'servitlaser@gmail.com',
-    subject: orderLabel + ' - SerVit Laser (€' + total + ')',
+    subject: orderLabel + ' - SerVit Laser (€' + details.total + ')',
     text: body,
+  });
+}
+
+// Email de confirmação para o cliente, enviado via Resend — o binding EMAIL
+// da Cloudflare não permite enviar para endereços de clientes (só para
+// endereços verificados na nossa própria conta).
+async function sendCustomerConfirmationEmail(details, orderNumber, env) {
+  if (!details.customerEmail || !env.RESEND_API_KEY) return;
+
+  const orderLabel = orderNumber ? ('Order #' + orderNumber) : 'Your order';
+
+  const body =
+    'Thank you for your order, ' + details.customerName + '!\n\n' +
+    orderLabel + ' — SerVit Laser\n\n' +
+    'Items:\n' + (details.lines || 'N/A') + '\n\n' +
+    'Shipping address:\n' + (details.addressLines || 'N/A') + '\n\n' +
+    'Total: €' + details.total + '\n\n' +
+    'We will ship your order via Posti soon. Questions? Just reply to this email or contact info@servitlaser.com.';
+
+  await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: {
+      'Authorization': 'Bearer ' + env.RESEND_API_KEY,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      from: 'SerVit Laser <info@servitlaser.com>',
+      to: details.customerEmail,
+      subject: orderLabel + ' confirmed - SerVit Laser',
+      text: body,
+    }),
   });
 }
 
@@ -273,11 +310,26 @@ async function handleStripeWebhook(request, env) {
   }
 
   if (event.type === 'checkout.session.completed') {
+    const session = event.data.object;
+    const orderNumber = await getNextOrderNumber(env);
+    let details = null;
     try {
-      await sendOrderEmail(event.data.object, env);
+      details = await buildOrderDetails(session, env);
     } catch (err) {
-      // Não falha a confirmação à Stripe só porque o email correu mal —
-      // a encomenda continua válida, só o aviso é que pode não ter chegado.
+      // Sem os detalhes não dá para enviar nenhum dos dois emails.
+    }
+    if (details) {
+      try {
+        await sendOrderEmail(details, orderNumber, env);
+      } catch (err) {
+        // Não falha a confirmação à Stripe só porque o email interno correu
+        // mal — a encomenda continua válida.
+      }
+      try {
+        await sendCustomerConfirmationEmail(details, orderNumber, env);
+      } catch (err) {
+        // Idem: um problema no email do cliente não deve travar o webhook.
+      }
     }
   }
 
