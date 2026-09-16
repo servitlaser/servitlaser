@@ -7,6 +7,6 @@
     "binding": "ASSETS"
   },
   "send_email": [
-    { "name": "EMAIL", "destination_address": "info@servitlaser.com" }
+    { "name": "EMAIL", "destination_address": "servitlaser@gmail.com" }
   ]
 }

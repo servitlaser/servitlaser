@@ -230,7 +230,7 @@ async function sendOrderEmail(session, env) {
 
   await env.EMAIL.send({
     from: 'orders@servitlaser.com',
-    to: 'info@servitlaser.com',
+    to: 'servitlaser@gmail.com',
     subject: 'New order - SerVit Laser (€' + total + ')',
     text: body,
   });
