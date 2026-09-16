@@ -190,9 +190,23 @@ async function verifyStripeSignature(payload, signatureHeader, secret) {
   return expectedSignature === signature;
 }
 
+// Número sequencial da encomenda, guardado na KV (ORDERS_KV). Cada chamada
+// lê o último número, soma 1 e grava logo o novo valor.
+// Nota: como o volume de encomendas é muito baixo, não há proteção contra
+// duas encomendas em simultâneo (seria preciso um Durable Object para isso),
+// mas na prática não deve acontecer.
+async function getNextOrderNumber(env) {
+  if (!env.ORDERS_KV) return null;
+  const current = await env.ORDERS_KV.get('order_counter');
+  const next = (parseInt(current, 10) || 0) + 1;
+  await env.ORDERS_KV.put('order_counter', String(next));
+  return next;
+}
+
 // Vai buscar os artigos da encomenda (com as gravações) e envia o email
 // com tudo o que é preciso para preparar a encomenda.
 async function sendOrderEmail(session, env) {
+  const orderNumber = await getNextOrderNumber(env);
   const lineItemsResponse = await fetch(
     'https://api.stripe.com/v1/checkout/sessions/' + session.id + '/line_items?expand[]=data.price.product',
     { headers: { 'Authorization': 'Bearer ' + env.STRIPE_SECRET_KEY } }
@@ -221,8 +235,10 @@ async function sendOrderEmail(session, env) {
 
   const total = ((session.amount_total || 0) / 100).toFixed(2).replace('.', ',');
 
+  const orderLabel = orderNumber ? ('Order #' + orderNumber) : 'New order';
+
   const body =
-    'New order received!\n\n' +
+    orderLabel + ' received!\n\n' +
     'Customer: ' + customerName + ' (' + customerEmail + ')\n\n' +
     'Shipping address:\n' + (addressLines || 'N/A') + '\n\n' +
     'Items:\n' + (lines || 'N/A') + '\n\n' +
@@ -231,7 +247,7 @@ async function sendOrderEmail(session, env) {
   await env.EMAIL.send({
     from: 'orders@servitlaser.com',
     to: 'servitlaser@gmail.com',
-    subject: 'New order - SerVit Laser (€' + total + ')',
+    subject: orderLabel + ' - SerVit Laser (€' + total + ')',
     text: body,
   });
 }

@@ -8,5 +8,8 @@
   },
   "send_email": [
     { "name": "EMAIL", "destination_address": "servitlaser@gmail.com" }
+  ],
+  "kv_namespaces": [
+    { "binding": "ORDERS_KV", "id": "COLA_AQUI_O_ID_DA_NAMESPACE" }
   ]
 }
