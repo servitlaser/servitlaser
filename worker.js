@@ -262,7 +262,11 @@ async function sendOrderEmail(details, orderNumber, env) {
 // da Cloudflare não permite enviar para endereços de clientes (só para
 // endereços verificados na nossa própria conta).
 async function sendCustomerConfirmationEmail(details, orderNumber, env) {
-  if (!details.customerEmail || !env.RESEND_API_KEY) return;
+  if (!details.customerEmail) return;
+  if (!env.RESEND_API_KEY) {
+    console.error('RESEND_API_KEY não está definido — email do cliente não foi enviado.');
+    return;
+  }
 
   const orderLabel = orderNumber ? ('Order #' + orderNumber) : 'Your order';
 
@@ -274,7 +278,7 @@ async function sendCustomerConfirmationEmail(details, orderNumber, env) {
     'Total: €' + details.total + '\n\n' +
     'We will ship your order via Posti soon. Questions? Just reply to this email or contact info@servitlaser.com.';
 
-  await fetch('https://api.resend.com/emails', {
+  const response = await fetch('https://api.resend.com/emails', {
     method: 'POST',
     headers: {
       'Authorization': 'Bearer ' + env.RESEND_API_KEY,
@@ -287,6 +291,11 @@ async function sendCustomerConfirmationEmail(details, orderNumber, env) {
       text: body,
     }),
   });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    console.error('Resend recusou o envio (' + response.status + '): ' + errorText);
+  }
 }
 
 async function handleStripeWebhook(request, env) {
