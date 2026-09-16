@@ -155,11 +155,127 @@ async function createCheckoutSession(request, env) {
   }
 }
 
+// Confirma que o pedido veio mesmo da Stripe (evita que alguém envie
+// pedidos falsos para o nosso webhook fingindo ser a Stripe).
+async function verifyStripeSignature(payload, signatureHeader, secret) {
+  if (!signatureHeader) return false;
+  const parts = {};
+  signatureHeader.split(',').forEach(function (part) {
+    const idx = part.indexOf('=');
+    if (idx === -1) return;
+    parts[part.slice(0, idx)] = part.slice(idx + 1);
+  });
+  const timestamp = parts.t;
+  const signature = parts.v1;
+  if (!timestamp || !signature) return false;
+
+  // Rejeita pedidos com mais de 5 minutos (proteção contra reenvios antigos).
+  const ageSeconds = Math.abs(Date.now() / 1000 - Number(timestamp));
+  if (ageSeconds > 300) return false;
+
+  const signedPayload = timestamp + '.' + payload;
+  const encoder = new TextEncoder();
+  const key = await crypto.subtle.importKey(
+    'raw',
+    encoder.encode(secret),
+    { name: 'HMAC', hash: 'SHA-256' },
+    false,
+    ['sign']
+  );
+  const signatureBuffer = await crypto.subtle.sign('HMAC', key, encoder.encode(signedPayload));
+  const expectedSignature = Array.from(new Uint8Array(signatureBuffer))
+    .map(function (b) { return b.toString(16).padStart(2, '0'); })
+    .join('');
+
+  return expectedSignature === signature;
+}
+
+// Vai buscar os artigos da encomenda (com as gravações) e envia o email
+// com tudo o que é preciso para preparar a encomenda.
+async function sendOrderEmail(session, env) {
+  const lineItemsResponse = await fetch(
+    'https://api.stripe.com/v1/checkout/sessions/' + session.id + '/line_items?expand[]=data.price.product',
+    { headers: { 'Authorization': 'Bearer ' + env.STRIPE_SECRET_KEY } }
+  );
+  const lineItemsData = await lineItemsResponse.json();
+  const items = Array.isArray(lineItemsData.data) ? lineItemsData.data : [];
+
+  const lines = items.map(function (item) {
+    const name = item.description || 'Item';
+    const qty = item.quantity || 1;
+    const amount = ((item.amount_total || 0) / 100).toFixed(2).replace('.', ',');
+    const note = (item.price && item.price.product && item.price.product.description) ? item.price.product.description : '';
+    return '- ' + name + ' x' + qty + ' — €' + amount + (note ? ' (' + note + ')' : '');
+  }).join('\n');
+
+  const customerName = (session.customer_details && session.customer_details.name) || 'N/A';
+  const customerEmail = (session.customer_details && session.customer_details.email) || 'N/A';
+  const shipping = session.shipping_details || session.customer_details || {};
+  const address = shipping.address || {};
+  const addressLines = [
+    address.line1,
+    address.line2,
+    [address.postal_code, address.city].filter(Boolean).join(' '),
+    address.country,
+  ].filter(Boolean).join('\n');
+
+  const total = ((session.amount_total || 0) / 100).toFixed(2).replace('.', ',');
+
+  const body =
+    'New order received!\n\n' +
+    'Customer: ' + customerName + ' (' + customerEmail + ')\n\n' +
+    'Shipping address:\n' + (addressLines || 'N/A') + '\n\n' +
+    'Items:\n' + (lines || 'N/A') + '\n\n' +
+    'Total: €' + total;
+
+  await env.EMAIL.send({
+    from: 'orders@servitlaser.com',
+    to: 'info@servitlaser.com',
+    subject: 'New order - SerVit Laser (€' + total + ')',
+    text: body,
+  });
+}
+
+async function handleStripeWebhook(request, env) {
+  if (!env.STRIPE_WEBHOOK_SECRET) {
+    return new Response('Webhook not configured.', { status: 500 });
+  }
+
+  const signature = request.headers.get('Stripe-Signature');
+  const payload = await request.text();
+
+  const isValid = await verifyStripeSignature(payload, signature, env.STRIPE_WEBHOOK_SECRET);
+  if (!isValid) {
+    return new Response('Invalid signature.', { status: 400 });
+  }
+
+  let event;
+  try {
+    event = JSON.parse(payload);
+  } catch (err) {
+    return new Response('Invalid JSON.', { status: 400 });
+  }
+
+  if (event.type === 'checkout.session.completed') {
+    try {
+      await sendOrderEmail(event.data.object, env);
+    } catch (err) {
+      // Não falha a confirmação à Stripe só porque o email correu mal —
+      // a encomenda continua válida, só o aviso é que pode não ter chegado.
+    }
+  }
+
+  return new Response('OK', { status: 200 });
+}
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
     if (url.pathname === '/create-checkout-session' && request.method === 'POST') {
       return createCheckoutSession(request, env);
+    }
+    if (url.pathname === '/stripe-webhook' && request.method === 'POST') {
+      return handleStripeWebhook(request, env);
     }
     return env.ASSETS.fetch(request);
   },
