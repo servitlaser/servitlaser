@@ -215,6 +215,7 @@ async function handleImageUpload(request, env) {
       metadata: { contentType: contentType, filename: originalName },
       expirationTtl: 60 * 60 * 24 * 30,
     });
+    console.log('Upload guardado: upload:' + key + ' — ' + bytes.byteLength + ' bytes, tipo ' + contentType);
   } catch (err) {
     return new Response(JSON.stringify({ error: 'Upload failed. Please try again.' }), {
       status: 500,
@@ -313,11 +314,14 @@ async function buildOrderDetails(session, env) {
     if (imageKey && env.ORDERS_KV) {
       try {
         const stored = await env.ORDERS_KV.getWithMetadata('upload:' + imageKey, 'arrayBuffer');
+        console.log('KV lookup upload:' + imageKey + ' → ' + (stored && stored.value ? (stored.value.byteLength + ' bytes encontrados') : 'NADA encontrado'));
         if (stored && stored.value) {
           const meta = stored.metadata || {};
           const filename = meta.filename || imageKey;
+          const base64 = arrayBufferToBase64(stored.value);
+          console.log('Anexo pronto: ' + filename + ', tipo ' + (meta.contentType || '?') + ', base64 com ' + base64.length + ' caracteres');
           attachments.push({
-            content: arrayBufferToBase64(stored.value),
+            content: base64,
             filename: filename,
             type: meta.contentType || 'application/octet-stream',
             disposition: 'attachment',
@@ -325,8 +329,7 @@ async function buildOrderDetails(session, env) {
           imageNote = ' [image attached: ' + filename + ']';
         }
       } catch (err) {
-        // Se a imagem já não estiver na KV (ex: passaram os 30 dias), a
-        // encomenda continua válida — só não sai anexada.
+        console.error('Erro ao ir buscar a imagem à KV: ' + err.message);
       }
     }
 
