@@ -228,18 +228,28 @@ async function handleImageUpload(request, env) {
   });
 }
 
-// Converte bytes (a imagem lida da KV) para texto base64, em pedaços, para
-// não rebentar com ficheiros maiores (String.fromCharCode tem um limite de
-// argumentos de cada vez).
+// Converte bytes (a imagem lida da KV) para texto base64. Construído byte a
+// byte, com a tabela RFC 4648, para não depender de truques como
+// String.fromCharCode.apply/btoa que podem comportar-se mal com ficheiros
+// maiores em alguns motores JavaScript.
 function arrayBufferToBase64(buffer) {
-  let binary = '';
   const bytes = new Uint8Array(buffer);
-  const chunkSize = 0x8000;
-  for (let i = 0; i < bytes.length; i += chunkSize) {
-    const chunk = bytes.subarray(i, i + chunkSize);
-    binary += String.fromCharCode.apply(null, chunk);
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+  let result = '';
+  let i = 0;
+  for (; i + 2 < bytes.length; i += 3) {
+    const chunk = (bytes[i] << 16) | (bytes[i + 1] << 8) | bytes[i + 2];
+    result += chars[(chunk >> 18) & 63] + chars[(chunk >> 12) & 63] + chars[(chunk >> 6) & 63] + chars[chunk & 63];
   }
-  return btoa(binary);
+  const remaining = bytes.length - i;
+  if (remaining === 1) {
+    const chunk = bytes[i] << 16;
+    result += chars[(chunk >> 18) & 63] + chars[(chunk >> 12) & 63] + '==';
+  } else if (remaining === 2) {
+    const chunk = (bytes[i] << 16) | (bytes[i + 1] << 8);
+    result += chars[(chunk >> 18) & 63] + chars[(chunk >> 12) & 63] + chars[(chunk >> 6) & 63] + '=';
+  }
+  return result;
 }
 
 // Confirma que o pedido veio mesmo da Stripe (evita que alguém envie
