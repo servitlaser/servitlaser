@@ -365,8 +365,9 @@ async function buildOrderDetails(session, env) {
 }
 
 // Email interno — para o teu Gmail, com os dados para preparares a encomenda.
-// Vai pelo binding EMAIL da Cloudflare (só pode enviar para o teu próprio
-// endereço verificado).
+// Sem imagem, vai pelo binding EMAIL nativo da Cloudflare (só pode enviar
+// para o teu próprio endereço verificado). Com imagem, vai pelo Resend —
+// ver o motivo no comentário mais abaixo.
 async function sendOrderEmail(details, orderNumber, env) {
   const orderLabel = orderNumber ? ('Order #' + orderNumber) : 'New order';
 
@@ -377,17 +378,39 @@ async function sendOrderEmail(details, orderNumber, env) {
     'Items:\n' + (details.lines || 'N/A') + '\n\n' +
     'Total: €' + details.total;
 
-  const payload = {
+  // Quando há uma imagem para anexar, usa o Resend em vez do binding EMAIL
+  // nativo da Cloudflare — este ainda está em beta pública e não estava a
+  // entregar os anexos corretamente. O Resend já sabemos que funciona bem.
+  if (details.attachments && details.attachments.length > 0 && env.RESEND_API_KEY) {
+    const response = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Bearer ' + env.RESEND_API_KEY,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        from: 'SerVit Laser <orders@servitlaser.com>',
+        to: 'servitlaser@gmail.com',
+        subject: orderLabel + ' - SerVit Laser (€' + details.total + ')',
+        text: body,
+        attachments: details.attachments.map(function (a) {
+          return { filename: a.filename, content: a.content };
+        }),
+      }),
+    });
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Resend recusou o email interno com anexo (' + response.status + '): ' + errorText);
+    }
+    return;
+  }
+
+  await env.EMAIL.send({
     from: 'orders@servitlaser.com',
     to: 'servitlaser@gmail.com',
     subject: orderLabel + ' - SerVit Laser (€' + details.total + ')',
     text: body,
-  };
-  if (details.attachments && details.attachments.length > 0) {
-    payload.attachments = details.attachments;
-  }
-
-  await env.EMAIL.send(payload);
+  });
 }
 
 // Email de confirmação para o cliente, enviado via Resend — o binding EMAIL
