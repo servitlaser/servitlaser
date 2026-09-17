@@ -135,6 +135,15 @@
   .engrave-box{margin-top:12px; display:flex; flex-direction:column; gap:8px;}
   .engrave-label{font-size:0.78rem; color:var(--body-l); display:block;}
   .engrave-box input[type="text"]{width:100%; background:#fff; border:1px solid var(--line-l); color:var(--ink-l); padding:9px 11px; border-radius:3px; font-size:0.85rem;}
+  .upload-box{margin-top:12px; display:flex; flex-direction:column; gap:8px;}
+  .upload-btn-row{display:flex; align-items:center; gap:10px; flex-wrap:wrap;}
+  .upload-btn{display:inline-block; padding:9px 16px; border-radius:3px; font-weight:500; font-size:0.8rem; letter-spacing:.02em; background:transparent; color:var(--ink-l); border:1.5px solid var(--line-l); cursor:pointer; transition:background .15s ease,color .15s ease,border-color .15s ease;}
+  .upload-btn:hover{background:var(--ink-l); color:var(--light-bg);}
+  .upload-status{font-size:0.78rem; color:var(--body-l);}
+  .upload-status.ok{color:var(--gold);}
+  .upload-status.error{color:#c0392b;}
+  .upload-hint{font-size:0.72rem; color:var(--body-l); opacity:0.8;}
+  .upload-input{position:absolute; width:1px; height:1px; overflow:hidden; opacity:0;}
   .products-more{text-align:center; margin-top:36px;}
 
   /* How it works */

@@ -93,10 +93,19 @@
           <div class="info">
             <h3>Card Box</h3>
             <p class="price">€10,00</p>
-            <button class="btn btn-primary btn-sm" onclick="addToCart('Card Box', 10.00, 'grava-caixa')">Add to Cart</button>
+            <button class="btn btn-primary btn-sm" onclick="addToCart('Card Box', 10.00, 'grava-caixa', 'caixa')">Add to Cart</button>
             <div class="engrave-box">
               <label class="engrave-label" for="grava-caixa">What would you like engraved?</label>
               <input type="text" id="grava-caixa" placeholder="Name, date or initials">
+            </div>
+            <div class="upload-box">
+              <label class="engrave-label" for="upload-caixa">Upload an image to engrave (optional)</label>
+              <div class="upload-btn-row">
+                <label class="upload-btn" for="upload-caixa">Choose file</label>
+                <span class="upload-status" id="upload-status-caixa">No file selected</span>
+              </div>
+              <input type="file" class="upload-input" id="upload-caixa" accept="image/jpeg,image/png,image/webp,image/svg+xml,application/pdf" onchange="handleFileUpload(this, 'caixa')">
+              <small class="upload-hint">JPG, PNG, WEBP, SVG or PDF · max 3 MB</small>
             </div>
           </div>
         </div>

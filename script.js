@@ -59,7 +59,48 @@
     document.getElementById('cartOverlay').classList.remove('open');
     unlockScroll();
   }
-  function addToCart(name, price, engraveId){
+  // Guarda a imagem já carregada para cada produto (enquanto ainda não foi
+  // adicionado ao carrinho), indexado pelo sufixo do produto (ex: "portachaves").
+  const uploadedFiles = {};
+
+  async function handleFileUpload(inputEl, productId){
+    const file = inputEl.files && inputEl.files[0];
+    const statusEl = document.getElementById('upload-status-' + productId);
+    if(!file) return;
+    const maxBytes = 3 * 1024 * 1024;
+    if(file.size > maxBytes){
+      statusEl.textContent = 'File is too large (max 3 MB).';
+      statusEl.className = 'upload-status error';
+      inputEl.value = '';
+      delete uploadedFiles[productId];
+      return;
+    }
+    statusEl.textContent = 'Uploading…';
+    statusEl.className = 'upload-status';
+    try {
+      const response = await fetch('/upload-image?name=' + encodeURIComponent(file.name), {
+        method: 'POST',
+        headers: { 'Content-Type': file.type || 'application/octet-stream' },
+        body: file,
+      });
+      const data = await response.json();
+      if(data.key){
+        uploadedFiles[productId] = { key: data.key, name: file.name };
+        statusEl.textContent = '✓ ' + file.name;
+        statusEl.className = 'upload-status ok';
+      } else {
+        statusEl.textContent = data.error || 'Upload failed. Please try again.';
+        statusEl.className = 'upload-status error';
+        delete uploadedFiles[productId];
+      }
+    } catch(err){
+      statusEl.textContent = 'Upload failed. Please try again.';
+      statusEl.className = 'upload-status error';
+      delete uploadedFiles[productId];
+    }
+  }
+
+  function addToCart(name, price, engraveId, uploadId){
     let note = '';
     if(engraveId){
       const input = document.getElementById(engraveId);
@@ -68,8 +109,18 @@
         input.value = '';
       }
     }
-    const existing = cart.find(function(i){ return i.name === name && i.note === note; });
-    if(existing){ existing.qty += 1; } else { cart.push({id:cartIdCounter++, name:name, price:price, qty:1, note:note}); }
+    let imageKey = null, imageName = null;
+    if(uploadId && uploadedFiles[uploadId]){
+      imageKey = uploadedFiles[uploadId].key;
+      imageName = uploadedFiles[uploadId].name;
+      delete uploadedFiles[uploadId];
+      const fileInput = document.getElementById('upload-' + uploadId);
+      if(fileInput) fileInput.value = '';
+      const statusEl = document.getElementById('upload-status-' + uploadId);
+      if(statusEl){ statusEl.textContent = 'No file selected'; statusEl.className = 'upload-status'; }
+    }
+    const existing = cart.find(function(i){ return i.name === name && i.note === note && i.imageKey === imageKey; });
+    if(existing){ existing.qty += 1; } else { cart.push({id:cartIdCounter++, name:name, price:price, qty:1, note:note, imageKey:imageKey, imageName:imageName}); }
     renderCart();
     openCart();
   }
@@ -98,7 +149,8 @@
       itemsEl.innerHTML = cart.map(function(i){
         const priceStr = i.price > 0 ? ('€'+(i.price*i.qty).toFixed(2).replace('.',',')) : 'A combinar';
         const noteHtml = i.note ? ('<br><small class="cart-item-note">Engraving: '+i.note+'</small>') : '';
-        return '<div class="cart-item"><span>'+i.name+'<br><small>'+priceStr+'</small>'+noteHtml+'</span>'+
+        const imageHtml = i.imageKey ? ('<br><small class="cart-item-note">📎 '+(i.imageName||'Image attached')+'</small>') : '';
+        return '<div class="cart-item"><span>'+i.name+'<br><small>'+priceStr+'</small>'+noteHtml+imageHtml+'</span>'+
           '<div class="cart-item-actions">'+
           '<div class="qty-stepper">'+
           '<button onclick="changeQty('+i.id+', -1)" aria-label="Decrease quantity">−</button>'+
@@ -129,7 +181,8 @@
     const lines = cart.map(function(i){
       const priceStr = i.price > 0 ? ('€'+(i.price*i.qty).toFixed(2).replace('.',',')) : 'a combinar';
       const noteStr = i.note ? (' (Engraving: '+i.note+')') : '';
-      return '- '+i.name+' x'+i.qty+' — '+priceStr+noteStr;
+      const imageStr = i.imageKey ? (' [I uploaded a custom image ('+(i.imageName||'file')+') on the site — could you let me know if I should attach it here too, or if you already have it?]') : '';
+      return '- '+i.name+' x'+i.qty+' — '+priceStr+noteStr+imageStr;
     });
     const subtotal = cart.reduce(function(s,i){ return s + i.price*i.qty; }, 0);
     const shippingInfo = getShippingInfo();
@@ -195,9 +248,15 @@
       addField('item_name_'+n, i.name);
       addField('amount_'+n, i.price.toFixed(2));
       addField('quantity_'+n, i.qty);
+      let optionIndex = 0;
       if(i.note){
-        addField('on0_'+n, 'Customization');
-        addField('os0_'+n, i.note);
+        addField('on'+optionIndex+'_'+n, 'Customization');
+        addField('os'+optionIndex+'_'+n, i.note);
+        optionIndex++;
+      }
+      if(i.imageKey){
+        addField('on'+optionIndex+'_'+n, 'Engraving image');
+        addField('os'+optionIndex+'_'+n, (i.imageName||'file uploaded on site') + ' — contact customer to get the file');
       }
     });
     const shippingIndex = cart.length + 1;

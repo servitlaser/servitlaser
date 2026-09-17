@@ -108,10 +108,19 @@
           <div class="info">
             <h3><a href="marcadores-de-livro.html">Bookmark</a></h3>
             <p class="price">€6,00</p>
-            <button class="btn btn-primary btn-sm" onclick="addToCart('Bookmark', 6.00, 'grava-marcador')">Add to Cart</button>
+            <button class="btn btn-primary btn-sm" onclick="addToCart('Bookmark', 6.00, 'grava-marcador', 'marcador')">Add to Cart</button>
             <div class="engrave-box">
               <label class="engrave-label" for="grava-marcador">What would you like engraved?</label>
               <input type="text" id="grava-marcador" placeholder="Name, date or phrase">
+            </div>
+            <div class="upload-box">
+              <label class="engrave-label" for="upload-marcador">Upload an image to engrave (optional)</label>
+              <div class="upload-btn-row">
+                <label class="upload-btn" for="upload-marcador">Choose file</label>
+                <span class="upload-status" id="upload-status-marcador">No file selected</span>
+              </div>
+              <input type="file" class="upload-input" id="upload-marcador" accept="image/jpeg,image/png,image/webp,image/svg+xml,application/pdf" onchange="handleFileUpload(this, 'marcador')">
+              <small class="upload-hint">JPG, PNG, WEBP, SVG or PDF · max 3 MB</small>
             </div>
           </div>
         </div>
@@ -130,10 +139,19 @@
           <div class="info">
             <h3><a href="caixas-de-cartas.html">Card Box</a></h3>
             <p class="price">€10,00</p>
-            <button class="btn btn-primary btn-sm" onclick="addToCart('Card Box', 10.00, 'grava-caixa')">Add to Cart</button>
+            <button class="btn btn-primary btn-sm" onclick="addToCart('Card Box', 10.00, 'grava-caixa', 'caixa')">Add to Cart</button>
             <div class="engrave-box">
               <label class="engrave-label" for="grava-caixa">What would you like engraved?</label>
               <input type="text" id="grava-caixa" placeholder="Name, date or initials">
+            </div>
+            <div class="upload-box">
+              <label class="engrave-label" for="upload-caixa">Upload an image to engrave (optional)</label>
+              <div class="upload-btn-row">
+                <label class="upload-btn" for="upload-caixa">Choose file</label>
+                <span class="upload-status" id="upload-status-caixa">No file selected</span>
+              </div>
+              <input type="file" class="upload-input" id="upload-caixa" accept="image/jpeg,image/png,image/webp,image/svg+xml,application/pdf" onchange="handleFileUpload(this, 'caixa')">
+              <small class="upload-hint">JPG, PNG, WEBP, SVG or PDF · max 3 MB</small>
             </div>
           </div>
         </div>
@@ -151,10 +169,19 @@
           <div class="info">
             <h3><a href="porta-chaves.html">Keychain</a></h3>
             <p class="price">€6,90</p>
-            <button class="btn btn-primary btn-sm" onclick="addToCart('Keychain', 6.90, 'grava-portachaves')">Add to Cart</button>
+            <button class="btn btn-primary btn-sm" onclick="addToCart('Keychain', 6.90, 'grava-portachaves', 'portachaves')">Add to Cart</button>
             <div class="engrave-box">
               <label class="engrave-label" for="grava-portachaves">What would you like engraved?</label>
               <input type="text" id="grava-portachaves" placeholder="Name, date or initials">
+            </div>
+            <div class="upload-box">
+              <label class="engrave-label" for="upload-portachaves">Upload an image to engrave (optional)</label>
+              <div class="upload-btn-row">
+                <label class="upload-btn" for="upload-portachaves">Choose file</label>
+                <span class="upload-status" id="upload-status-portachaves">No file selected</span>
+              </div>
+              <input type="file" class="upload-input" id="upload-portachaves" accept="image/jpeg,image/png,image/webp,image/svg+xml,application/pdf" onchange="handleFileUpload(this, 'portachaves')">
+              <small class="upload-hint">JPG, PNG, WEBP, SVG or PDF · max 3 MB</small>
             </div>
           </div>
         </div>

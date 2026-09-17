@@ -92,10 +92,19 @@
           <div class="info">
             <h3>Keychain</h3>
             <p class="price">€6,90</p>
-            <button class="btn btn-primary btn-sm" onclick="addToCart('Keychain', 6.90, 'grava-portachaves')">Add to Cart</button>
+            <button class="btn btn-primary btn-sm" onclick="addToCart('Keychain', 6.90, 'grava-portachaves', 'portachaves')">Add to Cart</button>
             <div class="engrave-box">
               <label class="engrave-label" for="grava-portachaves">What would you like engraved?</label>
               <input type="text" id="grava-portachaves" placeholder="Name, date or initials">
+            </div>
+            <div class="upload-box">
+              <label class="engrave-label" for="upload-portachaves">Upload an image to engrave (optional)</label>
+              <div class="upload-btn-row">
+                <label class="upload-btn" for="upload-portachaves">Choose file</label>
+                <span class="upload-status" id="upload-status-portachaves">No file selected</span>
+              </div>
+              <input type="file" class="upload-input" id="upload-portachaves" accept="image/jpeg,image/png,image/webp,image/svg+xml,application/pdf" onchange="handleFileUpload(this, 'portachaves')">
+              <small class="upload-hint">JPG, PNG, WEBP, SVG or PDF · max 3 MB</small>
             </div>
           </div>
         </div>

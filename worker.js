@@ -83,6 +83,11 @@ async function createCheckoutSession(request, env) {
       if (item.note) {
         product_data.description = 'Engraving: ' + String(item.note).slice(0, 200);
       }
+      // A chave da imagem é sempre gerada por nós no /upload-image (um UUID),
+      // por isso validamos o formato em vez de confiar cegamente no que vem do browser.
+      if (item.imageKey && /^[0-9a-f-]{20,80}\.[a-z0-9]{2,5}$/i.test(item.imageKey)) {
+        product_data.metadata = { image_key: item.imageKey };
+      }
       return {
         price_data: {
           currency: 'eur',
@@ -155,6 +160,87 @@ async function createCheckoutSession(request, env) {
   }
 }
 
+// Recebe uma imagem enviada por um cliente (para gravar numa peça) e
+// guarda-a temporariamente na KV (ORDERS_KV, mesma que já tens) com um
+// nome aleatório. Expira ao fim de 30 dias — só precisa de durar até a
+// encomenda ser paga e o email sair. Devolve a chave, que o browser depois
+// anexa ao artigo do carrinho.
+async function handleImageUpload(request, env) {
+  if (!env.ORDERS_KV) {
+    return new Response(JSON.stringify({ error: 'Image uploads are not configured yet.' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+
+  const contentType = request.headers.get('Content-Type') || '';
+  const extensionByType = {
+    'image/jpeg': 'jpg',
+    'image/png': 'png',
+    'image/webp': 'webp',
+    'image/svg+xml': 'svg',
+    'application/pdf': 'pdf',
+  };
+  const extension = extensionByType[contentType];
+  if (!extension) {
+    return new Response(JSON.stringify({ error: 'Unsupported file type. Please upload a JPG, PNG, WEBP, SVG or PDF.' }), {
+      status: 400,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+
+  // Limite baixo de propósito: a imagem vai como anexo de email, e a
+  // Cloudflare recusa mensagens com mais de 5 MB (já a contar com o anexo).
+  const maxBytes = 3 * 1024 * 1024;
+  const contentLength = Number(request.headers.get('Content-Length') || 0);
+  if (contentLength > maxBytes) {
+    return new Response(JSON.stringify({ error: 'File is too large (max 3 MB, so it can be emailed as an attachment).' }), {
+      status: 400,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+
+  const originalName = (new URL(request.url).searchParams.get('name') || ('engraving.' + extension)).slice(0, 100);
+  const key = crypto.randomUUID() + '.' + extension;
+
+  try {
+    const bytes = await request.arrayBuffer();
+    if (bytes.byteLength > maxBytes) {
+      return new Response(JSON.stringify({ error: 'File is too large (max 3 MB, so it can be emailed as an attachment).' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+    await env.ORDERS_KV.put('upload:' + key, bytes, {
+      metadata: { contentType: contentType, filename: originalName },
+      expirationTtl: 60 * 60 * 24 * 30,
+    });
+  } catch (err) {
+    return new Response(JSON.stringify({ error: 'Upload failed. Please try again.' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+
+  return new Response(JSON.stringify({ key: key }), {
+    headers: { 'Content-Type': 'application/json' },
+  });
+}
+
+// Converte bytes (a imagem lida da KV) para texto base64, em pedaços, para
+// não rebentar com ficheiros maiores (String.fromCharCode tem um limite de
+// argumentos de cada vez).
+function arrayBufferToBase64(buffer) {
+  let binary = '';
+  const bytes = new Uint8Array(buffer);
+  const chunkSize = 0x8000;
+  for (let i = 0; i < bytes.length; i += chunkSize) {
+    const chunk = bytes.subarray(i, i + chunkSize);
+    binary += String.fromCharCode.apply(null, chunk);
+  }
+  return btoa(binary);
+}
+
 // Confirma que o pedido veio mesmo da Stripe (evita que alguém envie
 // pedidos falsos para o nosso webhook fingindo ser a Stripe).
 async function verifyStripeSignature(payload, signatureHeader, secret) {
@@ -213,13 +299,41 @@ async function buildOrderDetails(session, env) {
   const lineItemsData = await lineItemsResponse.json();
   const items = Array.isArray(lineItemsData.data) ? lineItemsData.data : [];
 
-  const lines = items.map(function (item) {
+  const lineTexts = [];
+  const attachments = [];
+
+  for (const item of items) {
     const name = item.description || 'Item';
     const qty = item.quantity || 1;
     const amount = ((item.amount_total || 0) / 100).toFixed(2).replace('.', ',');
     const note = (item.price && item.price.product && item.price.product.description) ? item.price.product.description : '';
-    return '- ' + name + ' x' + qty + ' — €' + amount + (note ? ' (' + note + ')' : '');
-  }).join('\n');
+    const imageKey = (item.price && item.price.product && item.price.product.metadata) ? item.price.product.metadata.image_key : null;
+
+    let imageNote = '';
+    if (imageKey && env.ORDERS_KV) {
+      try {
+        const stored = await env.ORDERS_KV.getWithMetadata('upload:' + imageKey, 'arrayBuffer');
+        if (stored && stored.value) {
+          const meta = stored.metadata || {};
+          const filename = meta.filename || imageKey;
+          attachments.push({
+            content: arrayBufferToBase64(stored.value),
+            filename: filename,
+            type: meta.contentType || 'application/octet-stream',
+            disposition: 'attachment',
+          });
+          imageNote = ' [image attached: ' + filename + ']';
+        }
+      } catch (err) {
+        // Se a imagem já não estiver na KV (ex: passaram os 30 dias), a
+        // encomenda continua válida — só não sai anexada.
+      }
+    }
+
+    lineTexts.push('- ' + name + ' x' + qty + ' — €' + amount + (note ? ' (' + note + ')' : '') + imageNote);
+  }
+
+  const lines = lineTexts.join('\n');
 
   const customerName = (session.customer_details && session.customer_details.name) || 'N/A';
   const customerEmail = (session.customer_details && session.customer_details.email) || null;
@@ -234,7 +348,7 @@ async function buildOrderDetails(session, env) {
 
   const total = ((session.amount_total || 0) / 100).toFixed(2).replace('.', ',');
 
-  return { lines: lines, customerName: customerName, customerEmail: customerEmail, addressLines: addressLines, total: total };
+  return { lines: lines, customerName: customerName, customerEmail: customerEmail, addressLines: addressLines, total: total, attachments: attachments };
 }
 
 // Email interno — para o teu Gmail, com os dados para preparares a encomenda.
@@ -250,12 +364,17 @@ async function sendOrderEmail(details, orderNumber, env) {
     'Items:\n' + (details.lines || 'N/A') + '\n\n' +
     'Total: €' + details.total;
 
-  await env.EMAIL.send({
+  const payload = {
     from: 'orders@servitlaser.com',
     to: 'servitlaser@gmail.com',
     subject: orderLabel + ' - SerVit Laser (€' + details.total + ')',
     text: body,
-  });
+  };
+  if (details.attachments && details.attachments.length > 0) {
+    payload.attachments = details.attachments;
+  }
+
+  await env.EMAIL.send(payload);
 }
 
 // Email de confirmação para o cliente, enviado via Resend — o binding EMAIL
@@ -353,6 +472,9 @@ export default {
     }
     if (url.pathname === '/stripe-webhook' && request.method === 'POST') {
       return handleStripeWebhook(request, env);
+    }
+    if (url.pathname === '/upload-image' && request.method === 'POST') {
+      return handleImageUpload(request, env);
     }
     return env.ASSETS.fetch(request);
   },
