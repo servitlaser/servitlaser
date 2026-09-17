@@ -252,6 +252,23 @@ function arrayBufferToBase64(buffer) {
   return result;
 }
 
+// TEMPORÁRIO — só para diagnóstico: mostra a imagem tal como está guardada
+// na KV, sem passar pelo email, para confirmar se o problema está no envio
+// ou em como o ficheiro é guardado. Podemos remover isto depois de resolvido.
+async function handleDebugImage(key, env) {
+  if (!env.ORDERS_KV) {
+    return new Response('Not found.', { status: 404 });
+  }
+  const stored = await env.ORDERS_KV.getWithMetadata('upload:' + key, 'arrayBuffer');
+  if (!stored || !stored.value) {
+    return new Response('Not found in KV.', { status: 404 });
+  }
+  const meta = stored.metadata || {};
+  return new Response(stored.value, {
+    headers: { 'Content-Type': meta.contentType || 'application/octet-stream' },
+  });
+}
+
 // Confirma que o pedido veio mesmo da Stripe (evita que alguém envie
 // pedidos falsos para o nosso webhook fingindo ser a Stripe).
 async function verifyStripeSignature(payload, signatureHeader, secret) {
@@ -511,6 +528,9 @@ export default {
     }
     if (url.pathname === '/upload-image' && request.method === 'POST') {
       return handleImageUpload(request, env);
+    }
+    if (url.pathname.startsWith('/debug-image/') && request.method === 'GET') {
+      return handleDebugImage(url.pathname.slice('/debug-image/'.length), env);
     }
     return env.ASSETS.fetch(request);
   },
