@@ -144,6 +144,14 @@
   .upload-status.error{color:#c0392b;}
   .upload-hint{font-size:0.72rem; color:var(--body-l); opacity:0.8;}
   .upload-input{position:absolute; width:1px; height:1px; overflow:hidden; opacity:0;}
+  .double-sided-box{display:flex; align-items:center; gap:10px; margin-top:14px;}
+  .toggle-switch{position:relative; display:inline-block; width:42px; height:24px; flex-shrink:0;}
+  .toggle-switch input{opacity:0; width:0; height:0;}
+  .toggle-slider{position:absolute; cursor:pointer; top:0; left:0; right:0; bottom:0; background-color:var(--line-l); transition:.2s; border-radius:24px;}
+  .toggle-slider:before{position:absolute; content:""; height:18px; width:18px; left:3px; bottom:3px; background-color:#fff; transition:.2s; border-radius:50%;}
+  .toggle-switch input:checked + .toggle-slider{background-color:var(--gold);}
+  .toggle-switch input:checked + .toggle-slider:before{transform:translateX(18px);}
+  .toggle-label{font-size:0.85rem; color:var(--ink-l); cursor:pointer;}
   .products-more{text-align:center; margin-top:36px;}
 
   /* How it works */

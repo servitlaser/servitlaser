@@ -1,5 +1,12 @@
   let cart = [];
   let cartIdCounter = 1;
+  // Quanto cobrar a mais por gravar nos 2 lados, por produto. Quando
+  // adicionares mais produtos, acrescenta aqui o valor certo para cada um.
+  const DOUBLE_SIDED_SURCHARGES = {
+    'Bookmark': 2.00,
+    'Card Box': 2.00,
+    'Keychain': 2.00,
+  };
   const SHIPPING_RATE_STANDARD = 7.90;
   const SHIPPING_RATE_EXTENDED = 9.90;
   const SHIPPING_STANDARD_MAX_QTY = 5;
@@ -100,7 +107,7 @@
     }
   }
 
-  function addToCart(name, price, engraveId, uploadId){
+  function addToCart(name, price, engraveId, uploadId, doubleSidedId){
     let note = '';
     if(engraveId){
       const input = document.getElementById(engraveId);
@@ -119,8 +126,18 @@
       const statusEl = document.getElementById('upload-status-' + uploadId);
       if(statusEl){ statusEl.textContent = 'No file selected'; statusEl.className = 'upload-status'; }
     }
-    const existing = cart.find(function(i){ return i.name === name && i.note === note && i.imageKey === imageKey; });
-    if(existing){ existing.qty += 1; } else { cart.push({id:cartIdCounter++, name:name, price:price, qty:1, note:note, imageKey:imageKey, imageName:imageName}); }
+    let doubleSided = false;
+    let finalPrice = price;
+    if(doubleSidedId){
+      const toggle = document.getElementById(doubleSidedId);
+      if(toggle && toggle.checked){
+        doubleSided = true;
+        finalPrice = price + (DOUBLE_SIDED_SURCHARGES[name] || 0);
+        toggle.checked = false;
+      }
+    }
+    const existing = cart.find(function(i){ return i.name === name && i.note === note && i.imageKey === imageKey && i.doubleSided === doubleSided; });
+    if(existing){ existing.qty += 1; } else { cart.push({id:cartIdCounter++, name:name, price:finalPrice, qty:1, note:note, imageKey:imageKey, imageName:imageName, doubleSided:doubleSided}); }
     renderCart();
     openCart();
   }
@@ -150,7 +167,8 @@
         const priceStr = i.price > 0 ? ('€'+(i.price*i.qty).toFixed(2).replace('.',',')) : 'A combinar';
         const noteHtml = i.note ? ('<br><small class="cart-item-note">Engraving: '+i.note+'</small>') : '';
         const imageHtml = i.imageKey ? ('<br><small class="cart-item-note">📎 '+(i.imageName||'Image attached')+'</small>') : '';
-        return '<div class="cart-item"><span>'+i.name+'<br><small>'+priceStr+'</small>'+noteHtml+imageHtml+'</span>'+
+        const doubleSidedHtml = i.doubleSided ? ('<br><small class="cart-item-note">Engraved on both sides</small>') : '';
+        return '<div class="cart-item"><span>'+i.name+'<br><small>'+priceStr+'</small>'+noteHtml+imageHtml+doubleSidedHtml+'</span>'+
           '<div class="cart-item-actions">'+
           '<div class="qty-stepper">'+
           '<button onclick="changeQty('+i.id+', -1)" aria-label="Decrease quantity">−</button>'+
@@ -182,7 +200,8 @@
       const priceStr = i.price > 0 ? ('€'+(i.price*i.qty).toFixed(2).replace('.',',')) : 'a combinar';
       const noteStr = i.note ? (' (Engraving: '+i.note+')') : '';
       const imageStr = i.imageKey ? (' [I uploaded a custom image ('+(i.imageName||'file')+') on the site — could you let me know if I should attach it here too, or if you already have it?]') : '';
-      return '- '+i.name+' x'+i.qty+' — '+priceStr+noteStr+imageStr;
+      const doubleSidedStr = i.doubleSided ? ' [Engraved on both sides]' : '';
+      return '- '+i.name+' x'+i.qty+' — '+priceStr+noteStr+imageStr+doubleSidedStr;
     });
     const subtotal = cart.reduce(function(s,i){ return s + i.price*i.qty; }, 0);
     const shippingInfo = getShippingInfo();

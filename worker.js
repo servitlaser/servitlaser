@@ -16,6 +16,14 @@ const PRODUCTS = {
   'Keychain': 6.90,
 };
 
+// Quanto cobrar a mais por gravar nos 2 lados, por produto. Quando
+// adicionares mais produtos, acrescenta aqui o valor certo para cada um.
+const DOUBLE_SIDED_SURCHARGES = {
+  'Bookmark': 2.00,
+  'Card Box': 2.00,
+  'Keychain': 2.00,
+};
+
 // Mesma regra de portes que está no script.js do site.
 function getShippingCost(totalQty) {
   if (totalQty > 10) return null; // bloqueado
@@ -79,9 +87,19 @@ async function createCheckoutSession(request, env) {
         throw new Error('Unknown product: ' + item.name);
       }
       const qty = Math.max(1, Number(item.qty) || 1);
-      const product_data = { name: item.name };
+      let finalUnitPrice = unitPrice;
+      const descriptionParts = [];
+      if (item.doubleSided && DOUBLE_SIDED_SURCHARGES[item.name] !== undefined) {
+        const surcharge = DOUBLE_SIDED_SURCHARGES[item.name];
+        finalUnitPrice += surcharge;
+        descriptionParts.push('Engraved on both sides (+€' + surcharge.toFixed(2) + ')');
+      }
       if (item.note) {
-        product_data.description = 'Engraving: ' + String(item.note).slice(0, 200);
+        descriptionParts.push('Engraving: ' + String(item.note).slice(0, 200));
+      }
+      const product_data = { name: item.name };
+      if (descriptionParts.length > 0) {
+        product_data.description = descriptionParts.join(' | ');
       }
       // A chave da imagem é sempre gerada por nós no /upload-image (um UUID),
       // por isso validamos o formato em vez de confiar cegamente no que vem do browser.
@@ -92,7 +110,7 @@ async function createCheckoutSession(request, env) {
         price_data: {
           currency: 'eur',
           product_data: product_data,
-          unit_amount: Math.round(unitPrice * 100),
+          unit_amount: Math.round(finalUnitPrice * 100),
         },
         quantity: qty,
       };

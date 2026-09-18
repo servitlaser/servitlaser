@@ -92,7 +92,14 @@
           <div class="info">
             <h3>Card Box</h3>
             <p class="price">€10,00</p>
-            <button class="btn btn-primary btn-sm" onclick="addToCart('Card Box', 10.00, 'grava-caixa', 'caixa')">Add to Cart</button>
+            <button class="btn btn-primary btn-sm" onclick="addToCart('Card Box', 10.00, 'grava-caixa', 'caixa', 'doublesided-caixa')">Add to Cart</button>
+            <div class="double-sided-box">
+              <label class="toggle-switch">
+                <input type="checkbox" id="doublesided-caixa">
+                <span class="toggle-slider"></span>
+              </label>
+              <label for="doublesided-caixa" class="toggle-label">Engrave on both sides (+€2,00)</label>
+            </div>
             <div class="engrave-box">
               <label class="engrave-label" for="grava-caixa">What would you like engraved?</label>
               <input type="text" id="grava-caixa" placeholder="Name, date or initials">

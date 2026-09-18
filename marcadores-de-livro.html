@@ -82,7 +82,14 @@
           <div class="info">
             <h3>Bookmark</h3>
             <p class="price">€6,00</p>
-            <button class="btn btn-primary btn-sm" onclick="addToCart('Bookmark', 6.00, 'grava-marcador', 'marcador')">Add to Cart</button>
+            <button class="btn btn-primary btn-sm" onclick="addToCart('Bookmark', 6.00, 'grava-marcador', 'marcador', 'doublesided-marcador')">Add to Cart</button>
+            <div class="double-sided-box">
+              <label class="toggle-switch">
+                <input type="checkbox" id="doublesided-marcador">
+                <span class="toggle-slider"></span>
+              </label>
+              <label for="doublesided-marcador" class="toggle-label">Engrave on both sides (+€2,00)</label>
+            </div>
             <div class="engrave-box">
               <label class="engrave-label" for="grava-marcador">What would you like engraved?</label>
               <input type="text" id="grava-marcador" placeholder="Name, date or phrase">
