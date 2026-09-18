@@ -221,52 +221,6 @@
       alert('Something went wrong starting checkout. Please try again or use another payment option.');
     }
   }
-  function payWithPaypal(){
-    if(cart.length === 0){ alert('Your cart is empty.'); return; }
-    const shippingInfo = getShippingInfo();
-    if(shippingInfo.blocked){
-      alert('Your order has '+shippingInfo.totalQty+' items, which is more than we can ship in one order (max 10).\n\nPlease email info@servitlaser.com for a shipping quote before paying.');
-      return;
-    }
-    const form = document.createElement('form');
-    form.method = 'post';
-    form.action = 'https://www.paypal.com/cgi-bin/webscr';
-    form.target = '_blank';
-    function addField(name, value){
-      const input = document.createElement('input');
-      input.type = 'hidden';
-      input.name = name;
-      input.value = value;
-      form.appendChild(input);
-    }
-    addField('cmd', '_cart');
-    addField('upload', '1');
-    addField('business', 'O-TEU-EMAIL-PAYPAL@exemplo.com');
-    addField('currency_code', 'EUR');
-    cart.forEach(function(i, idx){
-      const n = idx + 1;
-      addField('item_name_'+n, i.name);
-      addField('amount_'+n, i.price.toFixed(2));
-      addField('quantity_'+n, i.qty);
-      let optionIndex = 0;
-      if(i.note){
-        addField('on'+optionIndex+'_'+n, 'Customization');
-        addField('os'+optionIndex+'_'+n, i.note);
-        optionIndex++;
-      }
-      if(i.imageKey){
-        addField('on'+optionIndex+'_'+n, 'Engraving image');
-        addField('os'+optionIndex+'_'+n, (i.imageName||'file uploaded on site') + ' — contact customer to get the file');
-      }
-    });
-    const shippingIndex = cart.length + 1;
-    addField('item_name_'+shippingIndex, 'Shipping (Posti, Finland)');
-    addField('amount_'+shippingIndex, shippingInfo.cost.toFixed(2));
-    addField('quantity_'+shippingIndex, '1');
-    document.body.appendChild(form);
-    form.submit();
-    document.body.removeChild(form);
-  }
   function enviarPersonalizacao(){
     const nome = document.getElementById('p-nome').value.trim();
     const produto = document.getElementById('p-produto').value.trim();
