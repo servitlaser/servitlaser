@@ -290,17 +290,16 @@
     });
   });
 
-  // Dropdown "Products": hover-intent simples (abrir logo, fechar com pequeno atraso)
-  // em vez de calcular distâncias do rato — evita ficar preso aberto.
-  document.querySelectorAll('.has-dropdown').forEach(function(item){
-    let closeTimer = null;
-    item.addEventListener('mouseenter', function(){
-      clearTimeout(closeTimer);
-      item.classList.add('open');
-    });
-    item.addEventListener('mouseleave', function(){
-      clearTimeout(closeTimer);
-      closeTimer = setTimeout(function(){ item.classList.remove('open'); }, 200);
+  // Dropdown "Products": abre/fecha ao clicar em "Products", em vez de por
+  // hover — o hover dava problemas em ecrãs táteis (ex: "modo desktop" no
+  // telemóvel), onde podia ficar preso aberto sem ninguém tocar em nada.
+  document.querySelectorAll('.has-dropdown > a').forEach(function(link){
+    link.addEventListener('click', function(e){
+      e.preventDefault();
+      const item = link.closest('.has-dropdown');
+      const isOpen = item.classList.contains('open');
+      closeAllDropdowns();
+      if(!isOpen) item.classList.add('open');
     });
   });
 
