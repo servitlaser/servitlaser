@@ -110,7 +110,7 @@
             <button class="btn btn-primary btn-sm" onclick="addToCart('Bookmark', 6.00, 'grava-marcador', 'marcador', 'doublesided-marcador')">Add to Cart</button>
             <div class="double-sided-box">
               <label class="toggle-switch">
-                <input type="checkbox" id="doublesided-marcador">
+                <input type="checkbox" id="doublesided-marcador" onchange="updateDoubleSidedUI('doublesided-marcador','marcador')">
                 <span class="toggle-slider"></span>
               </label>
               <label for="doublesided-marcador" class="toggle-label">Engrave on both sides (+€2,00)</label>
@@ -120,12 +120,21 @@
               <input type="text" id="grava-marcador" placeholder="Name, date or phrase">
             </div>
             <div class="upload-box">
-              <label class="engrave-label" for="upload-marcador">Upload an image to engrave (optional)</label>
+              <label class="engrave-label" id="upload-label-marcador" for="upload-marcador">Upload an image to engrave (optional)</label>
               <div class="upload-btn-row">
                 <label class="upload-btn" for="upload-marcador">Choose file</label>
                 <span class="upload-status" id="upload-status-marcador">No file selected</span>
               </div>
               <input type="file" class="upload-input" id="upload-marcador" accept="image/jpeg,image/png,image/webp,image/svg+xml,application/pdf" onchange="handleFileUpload(this, 'marcador')">
+              <small class="upload-hint">JPG, PNG, WEBP, SVG or PDF · max 3 MB</small>
+            </div>
+            <div class="upload-box upload-box-side2" id="upload-box-2-marcador" style="display:none;">
+              <label class="engrave-label" for="upload-marcador-2">Upload an image for side 2 (optional)</label>
+              <div class="upload-btn-row">
+                <label class="upload-btn" for="upload-marcador-2">Choose file</label>
+                <span class="upload-status" id="upload-status-marcador-2">No file selected</span>
+              </div>
+              <input type="file" class="upload-input" id="upload-marcador-2" accept="image/jpeg,image/png,image/webp,image/svg+xml,application/pdf" onchange="handleFileUpload(this, 'marcador-2')">
               <small class="upload-hint">JPG, PNG, WEBP, SVG or PDF · max 3 MB</small>
             </div>
           </div>
@@ -148,7 +157,7 @@
             <button class="btn btn-primary btn-sm" onclick="addToCart('Card Box', 10.00, 'grava-caixa', 'caixa', 'doublesided-caixa')">Add to Cart</button>
             <div class="double-sided-box">
               <label class="toggle-switch">
-                <input type="checkbox" id="doublesided-caixa">
+                <input type="checkbox" id="doublesided-caixa" onchange="updateDoubleSidedUI('doublesided-caixa','caixa')">
                 <span class="toggle-slider"></span>
               </label>
               <label for="doublesided-caixa" class="toggle-label">Engrave on both sides (+€2,00)</label>
@@ -158,12 +167,21 @@
               <input type="text" id="grava-caixa" placeholder="Name, date or initials">
             </div>
             <div class="upload-box">
-              <label class="engrave-label" for="upload-caixa">Upload an image to engrave (optional)</label>
+              <label class="engrave-label" id="upload-label-caixa" for="upload-caixa">Upload an image to engrave (optional)</label>
               <div class="upload-btn-row">
                 <label class="upload-btn" for="upload-caixa">Choose file</label>
                 <span class="upload-status" id="upload-status-caixa">No file selected</span>
               </div>
               <input type="file" class="upload-input" id="upload-caixa" accept="image/jpeg,image/png,image/webp,image/svg+xml,application/pdf" onchange="handleFileUpload(this, 'caixa')">
+              <small class="upload-hint">JPG, PNG, WEBP, SVG or PDF · max 3 MB</small>
+            </div>
+            <div class="upload-box upload-box-side2" id="upload-box-2-caixa" style="display:none;">
+              <label class="engrave-label" for="upload-caixa-2">Upload an image for side 2 (optional)</label>
+              <div class="upload-btn-row">
+                <label class="upload-btn" for="upload-caixa-2">Choose file</label>
+                <span class="upload-status" id="upload-status-caixa-2">No file selected</span>
+              </div>
+              <input type="file" class="upload-input" id="upload-caixa-2" accept="image/jpeg,image/png,image/webp,image/svg+xml,application/pdf" onchange="handleFileUpload(this, 'caixa-2')">
               <small class="upload-hint">JPG, PNG, WEBP, SVG or PDF · max 3 MB</small>
             </div>
           </div>
@@ -185,7 +203,7 @@
             <button class="btn btn-primary btn-sm" onclick="addToCart('Keychain', 6.90, 'grava-portachaves', 'portachaves', 'doublesided-portachaves')">Add to Cart</button>
             <div class="double-sided-box">
               <label class="toggle-switch">
-                <input type="checkbox" id="doublesided-portachaves">
+                <input type="checkbox" id="doublesided-portachaves" onchange="updateDoubleSidedUI('doublesided-portachaves','portachaves')">
                 <span class="toggle-slider"></span>
               </label>
               <label for="doublesided-portachaves" class="toggle-label">Engrave on both sides (+€2,00)</label>
@@ -195,12 +213,21 @@
               <input type="text" id="grava-portachaves" placeholder="Name, date or initials">
             </div>
             <div class="upload-box">
-              <label class="engrave-label" for="upload-portachaves">Upload an image to engrave (optional)</label>
+              <label class="engrave-label" id="upload-label-portachaves" for="upload-portachaves">Upload an image to engrave (optional)</label>
               <div class="upload-btn-row">
                 <label class="upload-btn" for="upload-portachaves">Choose file</label>
                 <span class="upload-status" id="upload-status-portachaves">No file selected</span>
               </div>
               <input type="file" class="upload-input" id="upload-portachaves" accept="image/jpeg,image/png,image/webp,image/svg+xml,application/pdf" onchange="handleFileUpload(this, 'portachaves')">
+              <small class="upload-hint">JPG, PNG, WEBP, SVG or PDF · max 3 MB</small>
+            </div>
+            <div class="upload-box upload-box-side2" id="upload-box-2-portachaves" style="display:none;">
+              <label class="engrave-label" for="upload-portachaves-2">Upload an image for side 2 (optional)</label>
+              <div class="upload-btn-row">
+                <label class="upload-btn" for="upload-portachaves-2">Choose file</label>
+                <span class="upload-status" id="upload-status-portachaves-2">No file selected</span>
+              </div>
+              <input type="file" class="upload-input" id="upload-portachaves-2" accept="image/jpeg,image/png,image/webp,image/svg+xml,application/pdf" onchange="handleFileUpload(this, 'portachaves-2')">
               <small class="upload-hint">JPG, PNG, WEBP, SVG or PDF · max 3 MB</small>
             </div>
           </div>

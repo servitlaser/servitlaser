@@ -67,8 +67,28 @@
     unlockScroll();
   }
   // Guarda a imagem já carregada para cada produto (enquanto ainda não foi
-  // adicionado ao carrinho), indexado pelo sufixo do produto (ex: "portachaves").
+  // adicionado ao carrinho), indexado pelo sufixo do produto (ex: "portachaves",
+  // ou "portachaves-2" para o lado 2).
   const uploadedFiles = {};
+
+  function resetUploadUI(uploadId){
+    delete uploadedFiles[uploadId];
+    const fileInput = document.getElementById('upload-' + uploadId);
+    if(fileInput) fileInput.value = '';
+    const statusEl = document.getElementById('upload-status-' + uploadId);
+    if(statusEl){ statusEl.textContent = 'No file selected'; statusEl.className = 'upload-status'; }
+  }
+
+  // Quando o botão "Engrave on both sides" é ligado/desligado, mostra ou
+  // esconde a caixa de upload do lado 2, e ajusta o texto da do lado 1.
+  function updateDoubleSidedUI(doubleSidedId, uploadId){
+    const toggle = document.getElementById(doubleSidedId);
+    const isOn = !!(toggle && toggle.checked);
+    const label1 = document.getElementById('upload-label-' + uploadId);
+    const box2 = document.getElementById('upload-box-2-' + uploadId);
+    if(label1) label1.textContent = isOn ? 'Upload an image for side 1 (optional)' : 'Upload an image to engrave (optional)';
+    if(box2) box2.style.display = isOn ? '' : 'none';
+  }
 
   async function handleFileUpload(inputEl, productId){
     const file = inputEl.files && inputEl.files[0];
@@ -116,16 +136,6 @@
         input.value = '';
       }
     }
-    let imageKey = null, imageName = null;
-    if(uploadId && uploadedFiles[uploadId]){
-      imageKey = uploadedFiles[uploadId].key;
-      imageName = uploadedFiles[uploadId].name;
-      delete uploadedFiles[uploadId];
-      const fileInput = document.getElementById('upload-' + uploadId);
-      if(fileInput) fileInput.value = '';
-      const statusEl = document.getElementById('upload-status-' + uploadId);
-      if(statusEl){ statusEl.textContent = 'No file selected'; statusEl.className = 'upload-status'; }
-    }
     let doubleSided = false;
     let finalPrice = price;
     if(doubleSidedId){
@@ -135,9 +145,22 @@
         finalPrice = price + (DOUBLE_SIDED_SURCHARGES[name] || 0);
         toggle.checked = false;
       }
+      if(uploadId) updateDoubleSidedUI(doubleSidedId, uploadId);
     }
-    const existing = cart.find(function(i){ return i.name === name && i.note === note && i.imageKey === imageKey && i.doubleSided === doubleSided; });
-    if(existing){ existing.qty += 1; } else { cart.push({id:cartIdCounter++, name:name, price:finalPrice, qty:1, note:note, imageKey:imageKey, imageName:imageName, doubleSided:doubleSided}); }
+    let imageKey = null, imageName = null;
+    if(uploadId && uploadedFiles[uploadId]){
+      imageKey = uploadedFiles[uploadId].key;
+      imageName = uploadedFiles[uploadId].name;
+      resetUploadUI(uploadId);
+    }
+    let imageKey2 = null, imageName2 = null;
+    if(doubleSided && uploadId && uploadedFiles[uploadId + '-2']){
+      imageKey2 = uploadedFiles[uploadId + '-2'].key;
+      imageName2 = uploadedFiles[uploadId + '-2'].name;
+      resetUploadUI(uploadId + '-2');
+    }
+    const existing = cart.find(function(i){ return i.name === name && i.note === note && i.imageKey === imageKey && i.imageKey2 === imageKey2 && i.doubleSided === doubleSided; });
+    if(existing){ existing.qty += 1; } else { cart.push({id:cartIdCounter++, name:name, price:finalPrice, qty:1, note:note, imageKey:imageKey, imageName:imageName, imageKey2:imageKey2, imageName2:imageName2, doubleSided:doubleSided}); }
     renderCart();
     openCart();
   }
@@ -166,9 +189,10 @@
       itemsEl.innerHTML = cart.map(function(i){
         const priceStr = i.price > 0 ? ('€'+(i.price*i.qty).toFixed(2).replace('.',',')) : 'A combinar';
         const noteHtml = i.note ? ('<br><small class="cart-item-note">Engraving: '+i.note+'</small>') : '';
-        const imageHtml = i.imageKey ? ('<br><small class="cart-item-note">📎 '+(i.imageName||'Image attached')+'</small>') : '';
+        const imageHtml = i.imageKey ? ('<br><small class="cart-item-note">📎 '+(i.imageKey2?'Side 1: ':'')+(i.imageName||'Image attached')+'</small>') : '';
+        const image2Html = i.imageKey2 ? ('<br><small class="cart-item-note">📎 Side 2: '+(i.imageName2||'Image attached')+'</small>') : '';
         const doubleSidedHtml = i.doubleSided ? ('<br><small class="cart-item-note">Engraved on both sides</small>') : '';
-        return '<div class="cart-item"><span>'+i.name+'<br><small>'+priceStr+'</small>'+noteHtml+imageHtml+doubleSidedHtml+'</span>'+
+        return '<div class="cart-item"><span>'+i.name+'<br><small>'+priceStr+'</small>'+noteHtml+imageHtml+image2Html+doubleSidedHtml+'</span>'+
           '<div class="cart-item-actions">'+
           '<div class="qty-stepper">'+
           '<button onclick="changeQty('+i.id+', -1)" aria-label="Decrease quantity">−</button>'+
@@ -199,7 +223,10 @@
     const lines = cart.map(function(i){
       const priceStr = i.price > 0 ? ('€'+(i.price*i.qty).toFixed(2).replace('.',',')) : 'a combinar';
       const noteStr = i.note ? (' (Engraving: '+i.note+')') : '';
-      const imageStr = i.imageKey ? (' [I uploaded a custom image ('+(i.imageName||'file')+') on the site — could you let me know if I should attach it here too, or if you already have it?]') : '';
+      const imageParts = [];
+      if(i.imageKey) imageParts.push((i.imageKey2?'side 1: ':'')+(i.imageName||'file'));
+      if(i.imageKey2) imageParts.push('side 2: '+(i.imageName2||'file'));
+      const imageStr = imageParts.length ? (' [I uploaded custom image(s) on the site ('+imageParts.join(', ')+') — could you let me know if I should attach them here too, or if you already have them?]') : '';
       const doubleSidedStr = i.doubleSided ? ' [Engraved on both sides]' : '';
       return '- '+i.name+' x'+i.qty+' — '+priceStr+noteStr+imageStr+doubleSidedStr;
     });

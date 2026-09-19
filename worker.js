@@ -103,8 +103,16 @@ async function createCheckoutSession(request, env) {
       }
       // A chave da imagem é sempre gerada por nós no /upload-image (um UUID),
       // por isso validamos o formato em vez de confiar cegamente no que vem do browser.
-      if (item.imageKey && /^[0-9a-f-]{20,80}\.[a-z0-9]{2,5}$/i.test(item.imageKey)) {
-        product_data.metadata = { image_key: item.imageKey };
+      const imageKeyPattern = /^[0-9a-f-]{20,80}\.[a-z0-9]{2,5}$/i;
+      const metadata = {};
+      if (item.imageKey && imageKeyPattern.test(item.imageKey)) {
+        metadata.image_key = item.imageKey;
+      }
+      if (item.doubleSided && item.imageKey2 && imageKeyPattern.test(item.imageKey2)) {
+        metadata.image_key_2 = item.imageKey2;
+      }
+      if (Object.keys(metadata).length > 0) {
+        product_data.metadata = metadata;
       }
       return {
         price_data: {
@@ -320,6 +328,30 @@ async function getNextOrderNumber(env) {
 
 // Vai buscar os artigos da encomenda (com as gravações) e monta os dados
 // comuns aos dois emails (interno e do cliente).
+// Vai buscar uma imagem à KV e prepara-a como anexo do email. sideLabel é
+// 'side1'/'side2' quando há gravação nos 2 lados, ou '' quando é só uma
+// imagem. Devolve o texto a acrescentar à linha da encomenda.
+async function fetchAndAttachImage(imageKey, sideLabel, env, attachments) {
+  if (!imageKey || !env.ORDERS_KV) return '';
+  try {
+    const stored = await env.ORDERS_KV.getWithMetadata('upload:' + imageKey, 'arrayBuffer');
+    if (stored && stored.value) {
+      const meta = stored.metadata || {};
+      const filename = (sideLabel ? sideLabel + '-' : '') + (meta.filename || imageKey);
+      attachments.push({
+        content: arrayBufferToBase64(stored.value),
+        filename: filename,
+        type: meta.contentType || 'application/octet-stream',
+        disposition: 'attachment',
+      });
+      return ' [image attached' + (sideLabel ? ' (' + sideLabel + ')' : '') + ': ' + filename + ']';
+    }
+  } catch (err) {
+    console.error('Erro ao ir buscar a imagem à KV (' + imageKey + '): ' + err.message);
+  }
+  return '';
+}
+
 async function buildOrderDetails(session, env) {
   const lineItemsResponse = await fetch(
     'https://api.stripe.com/v1/checkout/sessions/' + session.id + '/line_items?expand[]=data.price.product',
@@ -337,29 +369,10 @@ async function buildOrderDetails(session, env) {
     const amount = ((item.amount_total || 0) / 100).toFixed(2).replace('.', ',');
     const note = (item.price && item.price.product && item.price.product.description) ? item.price.product.description : '';
     const imageKey = (item.price && item.price.product && item.price.product.metadata) ? item.price.product.metadata.image_key : null;
+    const imageKey2 = (item.price && item.price.product && item.price.product.metadata) ? item.price.product.metadata.image_key_2 : null;
 
-    let imageNote = '';
-    if (imageKey && env.ORDERS_KV) {
-      try {
-        const stored = await env.ORDERS_KV.getWithMetadata('upload:' + imageKey, 'arrayBuffer');
-        console.log('KV lookup upload:' + imageKey + ' → ' + (stored && stored.value ? (stored.value.byteLength + ' bytes encontrados') : 'NADA encontrado'));
-        if (stored && stored.value) {
-          const meta = stored.metadata || {};
-          const filename = meta.filename || imageKey;
-          const base64 = arrayBufferToBase64(stored.value);
-          console.log('Anexo pronto: ' + filename + ', tipo ' + (meta.contentType || '?') + ', base64 com ' + base64.length + ' caracteres');
-          attachments.push({
-            content: base64,
-            filename: filename,
-            type: meta.contentType || 'application/octet-stream',
-            disposition: 'attachment',
-          });
-          imageNote = ' [image attached: ' + filename + ']';
-        }
-      } catch (err) {
-        console.error('Erro ao ir buscar a imagem à KV: ' + err.message);
-      }
-    }
+    let imageNote = await fetchAndAttachImage(imageKey, imageKey2 ? 'side1' : '', env, attachments);
+    imageNote += await fetchAndAttachImage(imageKey2, 'side2', env, attachments);
 
     lineTexts.push('- ' + name + ' x' + qty + ' — €' + amount + (note ? ' (' + note + ')' : '') + imageNote);
   }
