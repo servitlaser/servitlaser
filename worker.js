@@ -11,7 +11,7 @@
 // Preços oficiais — nunca confiar no preço que vem do browser, só na
 // quantidade e no nome do produto. Se mudares um preço no site, muda aqui também.
 const PRODUCTS = {
-  'Bookmark': 6.00,
+  'Bookmark': 5.90,
   'Card Box': 10.00,
   'Keychain': 4.90,
 };
