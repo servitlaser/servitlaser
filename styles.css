@@ -219,7 +219,7 @@
     nav.main-nav.open{transform:translateX(0);}
     nav.main-nav ul{flex-direction:column; gap:4px;}
     nav.main-nav a{display:block; padding:12px 4px; border-bottom:1px solid var(--line);}
-    .dropdown{display:block; position:static; border:none; background:none; margin-top:0; padding-left:14px;}
+    .dropdown{position:static; border:none; background:none; margin-top:0; padding-left:14px;}
     .hamburger{display:flex; color:var(--heading); grid-column:1; justify-self:start;}
     .site-header .wrap{display:grid; grid-template-columns:1fr auto 1fr; align-items:center;}
     .logo{grid-column:2; justify-self:center;}
