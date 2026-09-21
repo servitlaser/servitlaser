@@ -130,7 +130,7 @@
   .product-card h3{color:var(--ink-l); font-size:1.02rem; margin-bottom:8px;}
   .product-card h3 a{color:inherit; text-decoration:none;}
   .product-card h3 a:hover{text-decoration:underline;}
-  .product-card .price{font-family:'Fraunces',serif; color:var(--ink-l); font-weight:600; font-size:1.1rem; margin-bottom:14px;}
+  .product-card .price{font-family:'Inter',sans-serif; color:var(--ink-l); font-weight:600; font-size:1.1rem; margin-bottom:14px;}
   .product-card .btn{margin-top:auto;}
   .engrave-box{margin-top:12px; display:flex; flex-direction:column; gap:8px;}
   .engrave-label{font-size:0.78rem; color:var(--body-l); display:block;}
