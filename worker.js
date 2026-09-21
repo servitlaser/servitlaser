@@ -12,7 +12,7 @@
 // quantidade e no nome do produto. Se mudares um preço no site, muda aqui também.
 const PRODUCTS = {
   'Bookmark': 5.90,
-  'Card Box': 10.00,
+  'Card Box': 9.90,
   'Keychain': 4.90,
 };
 
