@@ -293,19 +293,30 @@
   // Dropdown "Products": abre/fecha ao clicar em "Products", em vez de por
   // hover — o hover dava problemas em ecrãs táteis (ex: "modo desktop" no
   // telemóvel), onde podia ficar preso aberto sem ninguém tocar em nada.
+  document.querySelectorAll('.has-dropdown').forEach(function(item){
+    const dropdown = item.querySelector('.dropdown');
+    if(dropdown) dropdown.style.display = 'none';
+  });
+
   document.querySelectorAll('.has-dropdown > a').forEach(function(link){
     link.addEventListener('click', function(e){
       e.preventDefault();
       const item = link.closest('.has-dropdown');
       const isOpen = item.classList.contains('open');
       closeAllDropdowns();
-      if(!isOpen) item.classList.add('open');
+      if(!isOpen){
+        item.classList.add('open');
+        const dropdown = item.querySelector('.dropdown');
+        if(dropdown) dropdown.style.display = 'block';
+      }
     });
   });
 
   function closeAllDropdowns(){
     document.querySelectorAll('.has-dropdown.open').forEach(function(item){
       item.classList.remove('open');
+      const dropdown = item.querySelector('.dropdown');
+      if(dropdown) dropdown.style.display = 'none';
     });
   }
   // Redes de segurança: fecha em qualquer clique fora, ao fazer scroll, ou com Escape.
