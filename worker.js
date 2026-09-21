@@ -13,7 +13,7 @@
 const PRODUCTS = {
   'Bookmark': 6.00,
   'Card Box': 10.00,
-  'Keychain': 6.90,
+  'Keychain': 4.90,
 };
 
 // Quanto cobrar a mais por gravar nos 2 lados, por produto. Quando
