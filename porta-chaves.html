@@ -76,7 +76,7 @@
   <section class="products">
     <div class="wrap">
       <div class="section-head light"><h2>Keychains</h2></div>
-      <div class="products-grid" style="grid-template-columns:1fr; max-width:420px; margin-inline:auto;">
+      <div class="products-grid">
         <div class="product-card" id="produto-portachaves" data-name="Keychain">
           <div class="product-photo">
             <span class="badge-novo">New</span>
@@ -119,6 +119,34 @@
                 <span class="upload-status" id="upload-status-portachaves-2">No file selected</span>
               </div>
               <input type="file" class="upload-input" id="upload-portachaves-2" accept="image/jpeg,image/png,image/webp,image/svg+xml,application/pdf" onchange="handleFileUpload(this, 'portachaves-2')">
+              <small class="upload-hint">JPG, PNG, WEBP, SVG or PDF · max 3 MB</small>
+            </div>
+          </div>
+        </div>
+        <div class="product-card" id="produto-portachaves-couro" data-name="Leather Keychain">
+          <div class="product-photo">
+            <span class="badge-novo">New</span>
+            <div class="photo-carousel">
+              <div class="photo-track">
+                <img src="keychain-couro-produto.jpg" alt="Round leather keychain laser engraved with a custom logo">
+              </div>
+            </div>
+          </div>
+          <div class="info">
+            <h3>Leather Keychain</h3>
+            <p class="price">€4,90</p>
+            <button class="btn btn-primary btn-sm" onclick="addToCart('Leather Keychain', 4.90, 'grava-portachaves-couro', 'portachaves-couro')">Add to Cart</button>
+            <div class="engrave-box">
+              <label class="engrave-label" for="grava-portachaves-couro">What would you like engraved?</label>
+              <input type="text" id="grava-portachaves-couro" placeholder="Name, date or initials">
+            </div>
+            <div class="upload-box">
+              <label class="engrave-label" id="upload-label-portachaves-couro" for="upload-portachaves-couro">Upload an image to engrave (optional)</label>
+              <div class="upload-btn-row">
+                <label class="upload-btn" for="upload-portachaves-couro">Choose file</label>
+                <span class="upload-status" id="upload-status-portachaves-couro">No file selected</span>
+              </div>
+              <input type="file" class="upload-input" id="upload-portachaves-couro" accept="image/jpeg,image/png,image/webp,image/svg+xml,application/pdf" onchange="handleFileUpload(this, 'portachaves-couro')">
               <small class="upload-hint">JPG, PNG, WEBP, SVG or PDF · max 3 MB</small>
             </div>
           </div>
