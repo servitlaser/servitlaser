@@ -546,6 +546,11 @@ export default {
     if (url.pathname === '/upload-image' && request.method === 'POST') {
       return handleImageUpload(request, env);
     }
+    // O endereço antigo da página de keychains passa a apontar para o novo
+    // (redirecionamento permanente, para não partir links já partilhados).
+    if (url.pathname === '/porta-chaves' || url.pathname === '/porta-chaves.html') {
+      return Response.redirect(url.origin + '/keychain', 301);
+    }
     return env.ASSETS.fetch(request);
   },
 };
