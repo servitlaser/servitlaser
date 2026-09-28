@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Returns & Exchanges — SerVit Laser</title>
-<meta name="description" content="Our policy on returns, exchanges, and what to do if your personalized order arrives damaged or incorrect.">
+<title>Bookmarks — SerVit Laser</title>
+<meta name="description" content="Wooden bookmarks laser engraved, customized to your taste.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🪵</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -74,23 +74,48 @@
 
 <main id="top">
   <section class="products">
-    <div class="wrap" style="max-width:720px;">
-      <div class="section-head light"><h2>Returns & Exchanges</h2></div>
-      <h3 style="font-family:'Fraunces',serif; color:var(--ink-l); font-size:1.15rem; margin-bottom:10px;">Personalized items</h3>
-      <p style="margin-bottom:20px;">Every piece we make is personalized to your order — engraved with the name, date, image or design you chose. Under EU consumer law, personalized goods are not covered by the standard 14-day right of withdrawal, so we're not able to accept a return simply because you've changed your mind. We'd still love to hear from you if something isn't right — see below.</p>
-
-      <h3 style="font-family:'Fraunces',serif; color:var(--ink-l); font-size:1.15rem; margin-bottom:10px;">Damaged or faulty items</h3>
-      <p style="margin-bottom:20px;">If your order arrives damaged, faulty, or different from what you ordered, contact us within 14 days of delivery at <a href="mailto:info@servitlaser.com" style="color:var(--ink-l); text-decoration:underline;">info@servitlaser.com</a> with a photo of the item and your order details. We'll sort out a repair, replacement, or refund.</p>
-
-      <h3 style="font-family:'Fraunces',serif; color:var(--ink-l); font-size:1.15rem; margin-bottom:10px;">Mistakes in personalization</h3>
-      <p style="margin-bottom:20px;">We double-check every order before engraving, but if a piece was engraved incorrectly on our end (not matching what you asked for), let us know and we'll remake it at no extra cost.</p>
-
-      <h3 style="font-family:'Fraunces',serif; color:var(--ink-l); font-size:1.15rem; margin-bottom:10px;">Lost in transit</h3>
-      <p style="margin-bottom:20px;">If your order doesn't arrive within a reasonable time of the estimated delivery window, contact us and we'll look into it with Posti.</p>
-
-      <h3 style="font-family:'Fraunces',serif; color:var(--ink-l); font-size:1.15rem; margin-bottom:10px;">Contact</h3>
-      <p>Email <a href="mailto:info@servitlaser.com" style="color:var(--ink-l); text-decoration:underline;">info@servitlaser.com</a> — we're happy to help.</p>
-
+    <div class="wrap">
+      <div class="section-head light"><h2>Bookmarks</h2></div>
+      <div class="products-grid" style="grid-template-columns:1fr; max-width:420px; margin-inline:auto;">
+        <div class="product-card" id="produto-marcador" data-name="Bookmark">
+          <div class="product-photo"><span class="badge-novo">New</span><img src="marcador-produto.jpg" alt="Wooden bookmark laser engraved"></div>
+          <div class="info">
+            <h3>Bookmark</h3>
+            <p class="price">€5,90</p>
+            <button class="btn btn-primary btn-sm" onclick="addToCart('Bookmark', 5.90, 'grava-marcador', 'marcador', 'doublesided-marcador')">Add to Cart</button>
+            <div class="double-sided-box">
+              <label class="toggle-switch">
+                <input type="checkbox" id="doublesided-marcador" onchange="updateDoubleSidedUI('doublesided-marcador','marcador')">
+                <span class="toggle-slider"></span>
+              </label>
+              <label for="doublesided-marcador" class="toggle-label">Engrave on both sides (+€2,00)</label>
+            </div>
+            <div class="engrave-box">
+              <label class="engrave-label" for="grava-marcador">What would you like engraved?</label>
+              <input type="text" id="grava-marcador" placeholder="Name, date or phrase">
+            </div>
+            <div class="upload-box">
+              <label class="engrave-label" id="upload-label-marcador" for="upload-marcador">Upload an image to engrave (optional)</label>
+              <div class="upload-btn-row">
+                <label class="upload-btn" for="upload-marcador">Choose file</label>
+                <span class="upload-status" id="upload-status-marcador">No file selected</span>
+              </div>
+              <input type="file" class="upload-input" id="upload-marcador" accept="image/jpeg,image/png,image/webp,image/svg+xml,application/pdf" onchange="handleFileUpload(this, 'marcador')">
+              <small class="upload-hint">JPG, PNG, WEBP, SVG or PDF · max 3 MB</small>
+            </div>
+            <div class="upload-box upload-box-side2" id="upload-box-2-marcador" style="display:none;">
+              <label class="engrave-label" for="upload-marcador-2">Upload an image for side 2 (optional)</label>
+              <div class="upload-btn-row">
+                <label class="upload-btn" for="upload-marcador-2">Choose file</label>
+                <span class="upload-status" id="upload-status-marcador-2">No file selected</span>
+              </div>
+              <input type="file" class="upload-input" id="upload-marcador-2" accept="image/jpeg,image/png,image/webp,image/svg+xml,application/pdf" onchange="handleFileUpload(this, 'marcador-2')">
+              <small class="upload-hint">JPG, PNG, WEBP, SVG or PDF · max 3 MB</small>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="products-more"><a class="btn btn-ghost-light" href="index.html#products">View All Products</a></div>
     </div>
   </section>
 </main>

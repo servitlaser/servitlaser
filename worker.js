@@ -27,6 +27,13 @@ const DOUBLE_SIDED_SURCHARGES = {
   'Tag Round Keychain': 2.00,
 };
 
+// Páginas cujo endereço mudou (antigo -> novo).
+const OLD_PAGE_REDIRECTS = {
+  '/porta-chaves': '/keychain',
+  '/caixas-de-cartas': '/boxes',
+  '/marcadores-de-livro': '/bookmarks',
+};
+
 // Mesma regra de portes que está no script.js do site.
 function getShippingCost(totalQty) {
   if (totalQty > 10) return null; // bloqueado
@@ -350,7 +357,7 @@ async function fetchAndAttachImage(imageKey, sideLabel, env, attachments) {
       return ' [image attached' + (sideLabel ? ' (' + sideLabel + ')' : '') + ': ' + filename + ']';
     }
   } catch (err) {
-    console.error('Erro ao ir buscar a imagem à KV (' + imageKey + '): ' + err.message);
+    console.error('Error fetching image from KV (' + imageKey + '): ' + err.message);
   }
   return '';
 }
@@ -453,7 +460,7 @@ async function sendOrderEmail(details, orderNumber, env) {
 async function sendCustomerConfirmationEmail(details, orderNumber, env) {
   if (!details.customerEmail) return;
   if (!env.RESEND_API_KEY) {
-    console.error('RESEND_API_KEY não está definido — email do cliente não foi enviado.');
+    console.error('RESEND_API_KEY is not set — customer email was not sent.');
     return;
   }
 
@@ -546,10 +553,11 @@ export default {
     if (url.pathname === '/upload-image' && request.method === 'POST') {
       return handleImageUpload(request, env);
     }
-    // O endereço antigo da página de keychains passa a apontar para o novo
-    // (redirecionamento permanente, para não partir links já partilhados).
-    if (url.pathname === '/porta-chaves' || url.pathname === '/porta-chaves.html') {
-      return Response.redirect(url.origin + '/keychain', 301);
+    // Os endereços antigos (em português) passam a apontar para os novos, em
+    // inglês — redirecionamento permanente, para não partir links já partilhados.
+    const oldPath = url.pathname.replace(/\.html$/, '');
+    if (OLD_PAGE_REDIRECTS[oldPath]) {
+      return Response.redirect(url.origin + OLD_PAGE_REDIRECTS[oldPath], 301);
     }
     return env.ASSETS.fetch(request);
   },

@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Returns & Exchanges — SerVit Laser</title>
-<meta name="description" content="Our policy on returns, exchanges, and what to do if your personalized order arrives damaged or incorrect.">
+<title>Boxes — SerVit Laser</title>
+<meta name="description" content="Card box in solid wood, laser engraved with the name, initials, or image you choose.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🪵</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -74,23 +74,69 @@
 
 <main id="top">
   <section class="products">
-    <div class="wrap" style="max-width:720px;">
-      <div class="section-head light"><h2>Returns & Exchanges</h2></div>
-      <h3 style="font-family:'Fraunces',serif; color:var(--ink-l); font-size:1.15rem; margin-bottom:10px;">Personalized items</h3>
-      <p style="margin-bottom:20px;">Every piece we make is personalized to your order — engraved with the name, date, image or design you chose. Under EU consumer law, personalized goods are not covered by the standard 14-day right of withdrawal, so we're not able to accept a return simply because you've changed your mind. We'd still love to hear from you if something isn't right — see below.</p>
-
-      <h3 style="font-family:'Fraunces',serif; color:var(--ink-l); font-size:1.15rem; margin-bottom:10px;">Damaged or faulty items</h3>
-      <p style="margin-bottom:20px;">If your order arrives damaged, faulty, or different from what you ordered, contact us within 14 days of delivery at <a href="mailto:info@servitlaser.com" style="color:var(--ink-l); text-decoration:underline;">info@servitlaser.com</a> with a photo of the item and your order details. We'll sort out a repair, replacement, or refund.</p>
-
-      <h3 style="font-family:'Fraunces',serif; color:var(--ink-l); font-size:1.15rem; margin-bottom:10px;">Mistakes in personalization</h3>
-      <p style="margin-bottom:20px;">We double-check every order before engraving, but if a piece was engraved incorrectly on our end (not matching what you asked for), let us know and we'll remake it at no extra cost.</p>
-
-      <h3 style="font-family:'Fraunces',serif; color:var(--ink-l); font-size:1.15rem; margin-bottom:10px;">Lost in transit</h3>
-      <p style="margin-bottom:20px;">If your order doesn't arrive within a reasonable time of the estimated delivery window, contact us and we'll look into it with Posti.</p>
-
-      <h3 style="font-family:'Fraunces',serif; color:var(--ink-l); font-size:1.15rem; margin-bottom:10px;">Contact</h3>
-      <p>Email <a href="mailto:info@servitlaser.com" style="color:var(--ink-l); text-decoration:underline;">info@servitlaser.com</a> — we're happy to help.</p>
-
+    <div class="wrap">
+      <div class="section-head light"><h2>Boxes</h2></div>
+      <div class="products-grid" style="grid-template-columns:1fr; max-width:420px; margin-inline:auto;">
+        <div class="product-card" id="produto-caixa" data-name="Card Box">
+          <div class="product-photo">
+            <span class="badge-novo">New</span>
+            <div class="photo-carousel">
+              <div class="photo-track">
+                <img src="caixa-produto.jpg" alt="Wooden card box laser engraved with four aces">
+                <img src="caixa-produto-2.jpg" alt="Wooden card box standing up with a fanned deck of cards in front">
+                <img src="caixa-produto-3.jpg" alt="Wooden card box with drawer open showing a red patterned deck of cards inside">
+              </div>
+            </div>
+            <div class="photo-dots"><button class="dot active" aria-label="Image 1"></button><button class="dot" aria-label="Image 2"></button><button class="dot" aria-label="Image 3"></button></div>
+          </div>
+          <div class="info">
+            <h3>Card Box</h3>
+            <p class="price">€9,90</p>
+            <button class="btn btn-primary btn-sm" onclick="addToCart('Card Box', 9.90, 'grava-caixa', 'caixa', 'doublesided-caixa')">Add to Cart</button>
+            <div class="double-sided-box">
+              <label class="toggle-switch">
+                <input type="checkbox" id="doublesided-caixa" onchange="updateDoubleSidedUI('doublesided-caixa','caixa')">
+                <span class="toggle-slider"></span>
+              </label>
+              <label for="doublesided-caixa" class="toggle-label">Engrave on both sides (+€2,00)</label>
+            </div>
+            <div class="engrave-box">
+              <label class="engrave-label" for="grava-caixa">What would you like engraved?</label>
+              <input type="text" id="grava-caixa" placeholder="Name, date or initials">
+            </div>
+            <div class="upload-box">
+              <label class="engrave-label" id="upload-label-caixa" for="upload-caixa">Upload an image to engrave (optional)</label>
+              <div class="upload-btn-row">
+                <label class="upload-btn" for="upload-caixa">Choose file</label>
+                <span class="upload-status" id="upload-status-caixa">No file selected</span>
+              </div>
+              <input type="file" class="upload-input" id="upload-caixa" accept="image/jpeg,image/png,image/webp,image/svg+xml,application/pdf" onchange="handleFileUpload(this, 'caixa')">
+              <small class="upload-hint">JPG, PNG, WEBP, SVG or PDF · max 3 MB</small>
+            </div>
+            <div class="upload-box upload-box-side2" id="upload-box-2-caixa" style="display:none;">
+              <label class="engrave-label" for="upload-caixa-2">Upload an image for side 2 (optional)</label>
+              <div class="upload-btn-row">
+                <label class="upload-btn" for="upload-caixa-2">Choose file</label>
+                <span class="upload-status" id="upload-status-caixa-2">No file selected</span>
+              </div>
+              <input type="file" class="upload-input" id="upload-caixa-2" accept="image/jpeg,image/png,image/webp,image/svg+xml,application/pdf" onchange="handleFileUpload(this, 'caixa-2')">
+              <small class="upload-hint">JPG, PNG, WEBP, SVG or PDF · max 3 MB</small>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="product-description">
+        <p>Keep your favorite deck of cards safe in style with this beautifully crafted wooden card box. Made from natural wood and precisely cut, it features an elegant engraved design of the four aces — perfect for poker nights, game lovers, and unique gifts.</p>
+        <ul class="feature-list">
+          <li>Durable natural wood</li>
+          <li>Precision laser engraved design</li>
+          <li>Perfect size for a standard deck of playing cards</li>
+          <li>Great gift for poker players and board game fans</li>
+          <li>Optional personalization available</li>
+        </ul>
+        <p>Whether for game nights with friends or as a special gift, this wooden card box adds a touch of craftsmanship and character to any table. Handmade with care, designed for card lovers — a unique piece for your game collection.</p>
+      </div>
+      <div class="products-more"><a class="btn btn-ghost-light" href="index.html#products">View All Products</a></div>
     </div>
   </section>
 </main>
