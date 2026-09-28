@@ -15,6 +15,7 @@ const PRODUCTS = {
   'Card Box': 9.90,
   'Keychain': 4.90,
   'Leather Keychain': 4.90,
+  'Tag Round Keychain': 2.90,
 };
 
 // Quanto cobrar a mais por gravar nos 2 lados, por produto. Quando
@@ -23,6 +24,7 @@ const DOUBLE_SIDED_SURCHARGES = {
   'Bookmark': 2.00,
   'Card Box': 2.00,
   'Keychain': 2.00,
+  'Tag Round Keychain': 2.00,
 };
 
 // Mesma regra de portes que está no script.js do site.

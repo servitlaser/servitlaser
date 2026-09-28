@@ -6,6 +6,7 @@
     'Bookmark': 2.00,
     'Card Box': 2.00,
     'Keychain': 2.00,
+    'Tag Round Keychain': 2.00,
   };
   const SHIPPING_RATE_STANDARD = 7.90;
   const SHIPPING_RATE_EXTENDED = 9.90;

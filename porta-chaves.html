@@ -151,6 +151,52 @@
             </div>
           </div>
         </div>
+        <div class="product-card" id="produto-portachaves-tag" data-name="Tag Round Keychain">
+          <div class="product-photo">
+            <span class="badge-novo">New</span>
+            <div class="photo-carousel">
+              <div class="photo-track">
+                <img src="keychain-tag-produto.jpg" alt="Round wooden tag keychain with chain, laser engraved SerVit Laser">
+                <img src="keychain-tag-produto-2.jpg" alt="Example of a round wooden tag keychain with a custom name laser engraved">
+              </div>
+            </div>
+            <div class="photo-dots"><button class="dot active" aria-label="Image 1"></button><button class="dot" aria-label="Image 2"></button></div>
+          </div>
+          <div class="info">
+            <h3>Tag Round Keychain</h3>
+            <p class="price">€2,90</p>
+            <button class="btn btn-primary btn-sm" onclick="addToCart('Tag Round Keychain', 2.90, 'grava-portachaves-tag', 'portachaves-tag', 'doublesided-portachaves-tag')">Add to Cart</button>
+            <div class="double-sided-box">
+              <label class="toggle-switch">
+                <input type="checkbox" id="doublesided-portachaves-tag" onchange="updateDoubleSidedUI('doublesided-portachaves-tag','portachaves-tag')">
+                <span class="toggle-slider"></span>
+              </label>
+              <label for="doublesided-portachaves-tag" class="toggle-label">Engrave on both sides (+€2,00)</label>
+            </div>
+            <div class="engrave-box">
+              <label class="engrave-label" for="grava-portachaves-tag">What would you like engraved?</label>
+              <input type="text" id="grava-portachaves-tag" placeholder="Name, date or initials">
+            </div>
+            <div class="upload-box">
+              <label class="engrave-label" id="upload-label-portachaves-tag" for="upload-portachaves-tag">Upload an image to engrave (optional)</label>
+              <div class="upload-btn-row">
+                <label class="upload-btn" for="upload-portachaves-tag">Choose file</label>
+                <span class="upload-status" id="upload-status-portachaves-tag">No file selected</span>
+              </div>
+              <input type="file" class="upload-input" id="upload-portachaves-tag" accept="image/jpeg,image/png,image/webp,image/svg+xml,application/pdf" onchange="handleFileUpload(this, 'portachaves-tag')">
+              <small class="upload-hint">JPG, PNG, WEBP, SVG or PDF · max 3 MB</small>
+            </div>
+            <div class="upload-box upload-box-side2" id="upload-box-2-portachaves-tag" style="display:none;">
+              <label class="engrave-label" for="upload-portachaves-tag-2">Upload an image for side 2 (optional)</label>
+              <div class="upload-btn-row">
+                <label class="upload-btn" for="upload-portachaves-tag-2">Choose file</label>
+                <span class="upload-status" id="upload-status-portachaves-tag-2">No file selected</span>
+              </div>
+              <input type="file" class="upload-input" id="upload-portachaves-tag-2" accept="image/jpeg,image/png,image/webp,image/svg+xml,application/pdf" onchange="handleFileUpload(this, 'portachaves-tag-2')">
+              <small class="upload-hint">JPG, PNG, WEBP, SVG or PDF · max 3 MB</small>
+            </div>
+          </div>
+        </div>
       </div>
       <div class="products-more"><a class="btn btn-ghost-light" href="index.html#produtos">View All Products</a></div>
     </div>
