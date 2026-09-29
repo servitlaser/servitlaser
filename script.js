@@ -188,7 +188,7 @@
       itemsEl.innerHTML = '<p class="cart-empty">Your cart is empty.</p>';
     } else {
       itemsEl.innerHTML = cart.map(function(i){
-        const priceStr = i.price > 0 ? ('€'+(i.price*i.qty).toFixed(2).replace('.',',')) : 'A combinar';
+        const priceStr = i.price > 0 ? ('€'+(i.price*i.qty).toFixed(2).replace('.',',')) : 'To be agreed';
         const noteHtml = i.note ? ('<br><small class="cart-item-note">Engraving: '+i.note+'</small>') : '';
         const imageHtml = i.imageKey ? ('<br><small class="cart-item-note">📎 '+(i.imageKey2?'Side 1: ':'')+(i.imageName||'Image attached')+'</small>') : '';
         const image2Html = i.imageKey2 ? ('<br><small class="cart-item-note">📎 Side 2: '+(i.imageName2||'Image attached')+'</small>') : '';
@@ -222,7 +222,7 @@
   function checkout(){
     if(cart.length === 0){ alert('Your cart is empty.'); return; }
     const lines = cart.map(function(i){
-      const priceStr = i.price > 0 ? ('€'+(i.price*i.qty).toFixed(2).replace('.',',')) : 'a combinar';
+      const priceStr = i.price > 0 ? ('€'+(i.price*i.qty).toFixed(2).replace('.',',')) : 'to be agreed';
       const noteStr = i.note ? (' (Engraving: '+i.note+')') : '';
       const imageParts = [];
       if(i.imageKey) imageParts.push((i.imageKey2?'side 1: ':'')+(i.imageName||'file'));

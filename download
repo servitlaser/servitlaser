@@ -1,0 +1,14 @@
+.git
+.github
+.gitignore
+.assetsignore
+.wrangler
+wrangler.jsonc
+worker.js
+secrets.json
+functions
+node_modules
+package.json
+package-lock.json
+*.md
+*.txt

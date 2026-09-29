@@ -72,7 +72,13 @@ async function createCheckoutSession(request, env) {
     });
   }
 
-  const cart = Array.isArray(body.cart) ? body.cart : [];
+  // Normaliza as quantidades (inteiro entre 1 e 10) ANTES de calcular portes
+  // e linhas, para que o total de artigos seja o mesmo nos dois sítios.
+  const rawCart = (body && Array.isArray(body.cart)) ? body.cart : [];
+  const cart = rawCart.map(function (item) {
+    const q = Math.floor(Number(item && item.qty));
+    return Object.assign({}, item, { qty: Math.min(10, Math.max(1, isFinite(q) ? q : 1)) });
+  });
   if (cart.length === 0) {
     return new Response(JSON.stringify({ error: 'Your cart is empty.' }), {
       status: 400,
