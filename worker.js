@@ -36,9 +36,8 @@ const OLD_PAGE_REDIRECTS = {
 
 // Mesma regra de portes que está no script.js do site.
 function getShippingCost(totalQty) {
-  if (totalQty > 10) return null; // bloqueado
-  if (totalQty > 5) return 9.90;
-  return 7.90;
+  if (totalQty > 100) return null; // bloqueado
+  return 7.90; // porte fixo, qualquer que seja a quantidade
 }
 
 // Converte um objeto/array JS na notação de colchetes que a API da Stripe
@@ -72,12 +71,12 @@ async function createCheckoutSession(request, env) {
     });
   }
 
-  // Normaliza as quantidades (inteiro entre 1 e 10) ANTES de calcular portes
+  // Normaliza as quantidades (inteiro entre 1 e 100) ANTES de calcular portes
   // e linhas, para que o total de artigos seja o mesmo nos dois sítios.
   const rawCart = (body && Array.isArray(body.cart)) ? body.cart : [];
   const cart = rawCart.map(function (item) {
     const q = Math.floor(Number(item && item.qty));
-    return Object.assign({}, item, { qty: Math.min(10, Math.max(1, isFinite(q) ? q : 1)) });
+    return Object.assign({}, item, { qty: Math.min(100, Math.max(1, isFinite(q) ? q : 1)) });
   });
   if (cart.length === 0) {
     return new Response(JSON.stringify({ error: 'Your cart is empty.' }), {
@@ -89,7 +88,7 @@ async function createCheckoutSession(request, env) {
   const totalQty = cart.reduce(function (sum, item) { return sum + (Number(item.qty) || 0); }, 0);
   const shippingCost = getShippingCost(totalQty);
   if (shippingCost === null) {
-    return new Response(JSON.stringify({ error: 'This order has more than 10 items. Please contact us at info@servitlaser.com for a shipping quote.' }), {
+    return new Response(JSON.stringify({ error: 'This order has more than 100 items. Please contact us at info@servitlaser.com for a shipping quote.' }), {
       status: 400,
       headers: { 'Content-Type': 'application/json' },
     });
